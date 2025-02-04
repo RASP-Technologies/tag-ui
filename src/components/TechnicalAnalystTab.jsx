@@ -22,6 +22,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 
 const TechnicalAnalystTab = () => {
+  const [prompt, setPrompt] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [optimizedQuery, setOptimizedQuery] = useState("");
@@ -83,7 +84,6 @@ const TechnicalAnalystTab = () => {
             sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
           />
       </Box>
-
       <Button variant="contained" color="primary" onClick={handleExecuteQuery} sx={{ mb: 2 }}>
         Execute Query
       </Button>
