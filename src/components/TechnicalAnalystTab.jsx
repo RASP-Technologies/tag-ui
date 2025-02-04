@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   TextField,
   Button,
@@ -21,7 +21,6 @@ import {
   Link,
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
-import { useRef } from "react";
 
 const TechnicalAnalystTab = () => {
   const [prompt, setPrompt] = useState("");
