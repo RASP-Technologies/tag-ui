@@ -23,7 +23,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 const TechnicalAnalystTab = () => {
   const [prompt, setPrompt] = useState("");
-  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [optimizedQuery, setOptimizedQuery] = useState("");
   const [data, setData] = useState([]);
@@ -35,7 +34,7 @@ const TechnicalAnalystTab = () => {
   const handleExecuteQuery = () => {
     setLoading(true);
     setTimeout(() => {
-      setOptimizedQuery(query.replace("*", "sales, revenue"));
+      setOptimizedQuery(prompt.replace("*", "sales, revenue"));
       setData([
         { region: "North", sales: "$120,000", revenue: "$60,000" },
         { region: "South", sales: "$98,000", revenue: "$50,000" },

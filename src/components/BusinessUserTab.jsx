@@ -35,13 +35,9 @@ const BusinessUserTab = () => {
   const handleFetchData = () => {
     setLoading(true);
     setTimeout(() => {
-      setQuery(`SELECT sales, region FROM sales_data WHERE quarter = 'Q1 2024' LIMIT 5`);
+      setQuery(`SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt JOIN customer c ON lt.CustomerID = c.CustomerID JOIN banks b ON lt.BankID = b.BankID WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`);
       setData([
-        { region: "North", sales: "$120,000" },
-        { region: "South", sales: "$98,000" },
-        { region: "East", sales: "$110,000" },
-        { region: "West", sales: "$105,000" },
-        { region: "Central", sales: "$102,000" },
+        { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
       ]);
       setLoading(false);
     }, 2000);
@@ -50,9 +46,9 @@ const BusinessUserTab = () => {
     const handleInsightData = () => {
       setInsightLoading(true);
       setTimeout(() => {
-        setInsights("North region had the highest sales in Q1 2024.");
+        setInsights("The total loan given my China Development Bank is $300,000");
         setNextPrompts([
-                "What are the sales for Q2 2024?",
+                "How much loan has India National Bank given to it's customer?",
                 "Compare Q1 2024 sales with Q1 2023.",
                 "Show sales trends for 2024.",
               ]);
@@ -98,7 +94,7 @@ const BusinessUserTab = () => {
       )}
 
       {data.length > 0 && (
-        <Box sx={{ height: '450px', // Fixed container height
+        <Box sx={{
                 width: '100%',
                 display: 'flex',
                 flexDirection: 'column' }}
@@ -108,15 +104,17 @@ const BusinessUserTab = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: "bold" }}>Region</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Sales</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Customer Name</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Loan Amount</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Bank Name</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell>{row.region}</TableCell>
-                  <TableCell>{row.sales}</TableCell>
+                  <TableCell>{row.customerName}</TableCell>
+                  <TableCell>{row.loanAmount}</TableCell>
+                  <TableCell>{row.bank}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
