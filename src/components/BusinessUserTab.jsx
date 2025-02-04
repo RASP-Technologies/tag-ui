@@ -13,7 +13,13 @@ import {
   TableHead,
   TableRow,
   Grid,
+  Container,
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  IconButton,
 } from "@mui/material";
+import MenuIcon from '@mui/icons-material/Menu';
 
 const BusinessUserTab = () => {
   const [prompt, setPrompt] = useState("");
@@ -23,6 +29,8 @@ const BusinessUserTab = () => {
   const [insights, setInsights] = useState("");
   const [inference, setInference] = useState("");
   const [nextPrompts, setNextPrompts] = useState([]);
+  const [insightLoading, setInsightLoading] = useState(false);
+  const [insightTimeout, setInsightTimeout] = useState(null);
 
   const handleFetchData = () => {
     setLoading(true);
@@ -35,27 +43,47 @@ const BusinessUserTab = () => {
         { region: "West", sales: "$105,000" },
         { region: "Central", sales: "$102,000" },
       ]);
-      setInsights("North region had the highest sales in Q1 2024.");
-      setInference("Sales performance is strong in the North, and marketing efforts may need to focus on the South.");
-      setNextPrompts([
-        "What are the sales for Q2 2024?",
-        "Compare Q1 2024 sales with Q1 2023.",
-        "Show sales trends for 2024.",
-      ]);
       setLoading(false);
     }, 2000);
   };
 
+    const handleInsightData = () => {
+      setInsightLoading(true);
+      setTimeout(() => {
+        setInsights("North region had the highest sales in Q1 2024.");
+        setNextPrompts([
+                "What are the sales for Q2 2024?",
+                "Compare Q1 2024 sales with Q1 2023.",
+                "Show sales trends for 2024.",
+              ]);
+        setInsightLoading(false);
+      }, 2000);
+    };
+
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", p: 3, backgroundColor: "#f4f6f8" }}>
-      <TextField
-        fullWidth
-        label="Enter your prompt"
-        variant="outlined"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
-      />
+   <Container maxWidth="xl" sx={{ width: '100vw', height: '130vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Center the content */}
+     <CssBaseline />
+       <AppBar position="static">
+         <Toolbar>
+           <IconButton edge="start" color="inherit" aria-label="menu">
+             <MenuIcon />
+           </IconButton>
+           <Typography variant="h6" style={{ flexGrow: 1 }}>
+             Data Insights
+           </Typography>
+         </Toolbar>
+       </AppBar>
+
+      <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <TextField
+            fullWidth
+            label="Enter your prompt"
+            variant="outlined"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+          />
+      </Box>
       <Button variant="contained" color="primary" onClick={handleFetchData} sx={{ mb: 2 }}>
         Fetch Data
       </Button>
@@ -70,7 +98,12 @@ const BusinessUserTab = () => {
       )}
 
       {data.length > 0 && (
-        <TableContainer component={Paper} sx={{ mt: 2, width: "100%" }}>
+        <Box sx={{ height: '450px', // Fixed container height
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column' }}
+        >
+        <TableContainer component={Paper} sx={{ mt: 2, mb: 2, width: "100%" }}>
           <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>Retrieved Data:</Typography>
           <Table>
             <TableHead>
@@ -89,22 +122,23 @@ const BusinessUserTab = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        </Box>
       )}
 
-      <Grid container spacing={2} sx={{ mt: 2, width: "100%" }}>
-        <Grid item xs={6}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: "bold", color: "#388e3c" }}>Insights:</Typography>
-            <Typography>{insights}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={6}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" sx={{ fontWeight: "bold", color: "#d32f2f" }}>Inference:</Typography>
-            <Typography>{inference}</Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+    {data.length > 0 && (
+        <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
+          Get Insights
+        </Button>
+      )}
+
+    { insightLoading && <CircularProgress sx={{ mt: 2 }} />}
+
+    { insights && (
+      <Paper sx={{ mt: 2, p: 2, width: "100%" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#388e3c" }}>Insights:</Typography>
+        <Typography>{insights}</Typography>
+      </Paper>
+      )}
 
       {nextPrompts.length > 0 && (
         <Paper sx={{ mt: 2, p: 2, width: "100%" }}>
@@ -114,7 +148,7 @@ const BusinessUserTab = () => {
           ))}
         </Paper>
       )}
-    </Box>
+    </Container>
   );
 };
 

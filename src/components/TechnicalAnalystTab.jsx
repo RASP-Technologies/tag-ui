@@ -13,13 +13,23 @@ import {
   TableHead,
   TableRow,
   Grid,
+  Container,
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  IconButton,
 } from "@mui/material";
+import MenuIcon from '@mui/icons-material/Menu';
 
 const TechnicalAnalystTab = () => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [optimizedQuery, setOptimizedQuery] = useState("");
   const [data, setData] = useState([]);
+  const [insights, setInsights] = useState("");
+  const [nextPrompts, setNextPrompts] = useState([]);
+  const [insightLoading, setInsightLoading] = useState(false);
+  const [insightTimeout, setInsightTimeout] = useState(null);
 
   const handleExecuteQuery = () => {
     setLoading(true);
@@ -36,16 +46,44 @@ const TechnicalAnalystTab = () => {
     }, 2000);
   };
 
+  const handleInsightData = () => {
+    setInsightLoading(true);
+    setTimeout(() => {
+      setInsights("North region had the highest sales in Q1 2024.");
+      setNextPrompts([
+              "What are the sales for Q2 2024?",
+              "Compare Q1 2024 sales with Q1 2023.",
+              "Show sales trends for 2024.",
+            ]);
+      setInsightLoading(false);
+    }, 2000);
+  };
+
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", p: 3, backgroundColor: "#f4f6f8" }}>
-      <TextField
-        fullWidth
-        label="Enter SQL Query"
-        variant="outlined"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
-      />
+    <Container maxWidth="xl" sx={{ width: '100vw', height: '120vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Center the content */}
+     <CssBaseline />
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton edge="start" color="inherit" aria-label="menu">
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" style={{ flexGrow: 1 }}>
+              Query Analyser
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
+      <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <TextField
+            fullWidth
+            label="Enter your prompt"
+            variant="outlined"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+          />
+      </Box>
+
       <Button variant="contained" color="primary" onClick={handleExecuteQuery} sx={{ mb: 2 }}>
         Execute Query
       </Button>
@@ -60,7 +98,12 @@ const TechnicalAnalystTab = () => {
       )}
 
       {data.length > 0 && (
-        <TableContainer component={Paper} sx={{ mt: 2, width: "100%" }}>
+        <Box sx={{ height: '450px', // Fixed container height
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column' }}
+        >
+        <TableContainer component={Paper} sx={{ mt: 2, mb : 2, width: "100%", maxHeight: 440, overflow: 'auto', table: { tableLayout: 'fixed' }}}>
           <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>Retrieved Data:</Typography>
           <Table>
             <TableHead>
@@ -81,8 +124,33 @@ const TechnicalAnalystTab = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        </Box>
       )}
-    </Box>
+
+      {data.length > 0 && (
+          <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
+            Get Insights
+          </Button>
+        )}
+
+      {insightLoading && <CircularProgress sx={{ mt: 2 }} />}
+
+      {insights && (
+        <Paper sx={{ mt: 2, p: 2, width: "100%" }}>
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#388e3c" }}>Insights:</Typography>
+          <Typography>{insights}</Typography>
+        </Paper>
+        )}
+
+        {nextPrompts.length > 0 && (
+          <Paper sx={{ mt: 2, p: 2, width: "100%" }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ff9800" }}>Suggested Next Prompts:</Typography>
+            {nextPrompts.map((p, index) => (
+              <Typography key={index}>- {p}</Typography>
+            ))}
+          </Paper>
+        )}
+    </Container>
   );
 };
 

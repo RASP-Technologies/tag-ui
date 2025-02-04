@@ -12,13 +12,18 @@ const App = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <AppBar position="static" sx={{ backgroundColor: "#1976d2", boxShadow: "none" }}>
+    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0, backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <AppBar position="static" sx={{ width: '100%', maxWidth: '100%', backgroundColor: "#1976d2", boxShadow: "none" }}>
         <Tabs
           value={tabIndex}
           onChange={handleTabChange}
           centered
-          sx={{ "& .MuiTab-root": { color: "white", fontWeight: "bold", textTransform: "none" }, "& .Mui-selected": { color: "#ffeb3b" } }}
+          textColor="inherit"
+          indicatorColor="secondary"
+          aria-label="secondary tabs example"
+          sx={{ "& .MuiTab-root": { fontSize: '1.2rem', color: "white", fontWeight: "bold", textTransform: "none" , alignItems: "left"}
+          ,"& .MuiTabs-flexContainer": { justifyContent: 'flex-start'}
+          }}
         >
           <Tab label="Business User" />
           <Tab label="Technical Analyst" />
