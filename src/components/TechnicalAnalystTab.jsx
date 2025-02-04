@@ -18,8 +18,10 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+  Link,
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
+import { useRef } from "react";
 
 const TechnicalAnalystTab = () => {
   const [prompt, setPrompt] = useState("");
@@ -30,6 +32,7 @@ const TechnicalAnalystTab = () => {
   const [nextPrompts, setNextPrompts] = useState([]);
   const [insightLoading, setInsightLoading] = useState(false);
   const [insightTimeout, setInsightTimeout] = useState(null);
+  const textFieldRef = useRef(null);
 
   const handleExecuteQuery = () => {
     setLoading(true);
@@ -59,6 +62,21 @@ const TechnicalAnalystTab = () => {
     }, 2000);
   };
 
+
+
+    const handleLinkClick = (text) => {
+    // Populate the TextField with the clicked link
+    setPrompt(text);
+    setTimeout(() => {
+      if (textFieldRef.current) {
+        textFieldRef.current.focus();
+
+        // Select all text in the TextField
+        textFieldRef.current.select();
+      }
+    }, 100);
+    };
+
   return (
     <Container maxWidth="xl" sx={{ width: '100vw', height: '120vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Center the content */}
      <CssBaseline />
@@ -75,6 +93,8 @@ const TechnicalAnalystTab = () => {
 
       <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <TextField
+            inputRef={textFieldRef}
+            autoFocus
             fullWidth
             label="Enter your prompt"
             variant="outlined"
@@ -145,7 +165,21 @@ const TechnicalAnalystTab = () => {
           <Paper sx={{ mt: 2, p: 2, width: "100%" }}>
             <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ff9800" }}>Suggested Next Prompts:</Typography>
             {nextPrompts.map((p, index) => (
-              <Typography key={index}>- {p}</Typography>
+              <Typography key={index}>
+                  <Link
+                    component="button"
+                    color="primary"
+                    underline="hover"
+                    onClick={() => handleLinkClick(p)}
+                    sx={{
+                      typography: 'body1',
+
+                      cursor: 'pointer'
+                    }}
+                  >
+                  - {p}
+                  </Link>
+                  </Typography>
             ))}
           </Paper>
         )}
