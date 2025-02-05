@@ -36,27 +36,161 @@ const BusinessUserTab = () => {
 
   const handleFetchData = () => {
     setLoading(true);
+  
+    const promptResponses = [
+      {
+        keywords: ["loan", "China Development Bank"],
+        query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
+                JOIN customer c ON lt.CustomerID = c.CustomerID 
+                JOIN banks b ON lt.BankID = b.BankID 
+                WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
+        data: [
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+        ],
+        insights: "The total loan given by China Development Bank is $300,000.",
+        nextPrompts: [
+          "How much loan has India National Bank given to its customers?",
+          "Compare Q1 2024 loan approvals with Q1 2023.",
+          "Show loan trends for 2024."
+        ]
+      },
+      {
+        keywords: ["sales", "top regions"],
+        query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
+                GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+        data: [
+          { region: "North", sales: "$500,000" },
+          { region: "South", sales: "$450,000" },
+          { region: "East", sales: "$420,000" },
+          { region: "West", sales: "$410,000" },
+          { region: "Central", sales: "$400,000" }
+        ],
+        insights: "The North region had the highest sales in 2024.",
+        nextPrompts: [
+          "What are the sales for Q2 2024?",
+          "Compare sales trends between 2023 and 2024.",
+          "Which product category performed best?"
+        ]
+      },
+      {
+        keywords: ["customer", "top revenue"],
+        query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
+                FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
+        data: [
+          { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
+          { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
+          { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
+        ],
+        insights: "TechCorp Ltd. was the highest revenue-generating customer.",
+        nextPrompts: [
+          "Which customer had the highest profit margin?",
+          "Compare revenue trends between 2023 and 2024.",
+          "Which product had the highest revenue?"
+        ]
+      }
+    ];
+  
     setTimeout(() => {
-      setQuery(`SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt JOIN customer c ON lt.CustomerID = c.CustomerID JOIN banks b ON lt.BankID = b.BankID WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`);
-      setData([
-        { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-      ]);
+      let response = {
+        query: "No data found for this prompt.",
+        data: [],
+        insights: "No insights available for this prompt.",
+        nextPrompts: []
+      };
+  
+      // Match the prompt against the keyword-based responses
+      for (const item of promptResponses) {
+        if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
+          response = item;
+          break;
+        }
+      }
+  
+      setQuery(response.query);
+      setData(response.data);
+      setInsights("");
+      setNextPrompts("");
       setLoading(false);
     }, 2000);
-  };
+  };  
 
-    const handleInsightData = () => {
-      setInsightLoading(true);
-      setTimeout(() => {
-        setInsights("The total loan given my China Development Bank is $300,000");
-        setNextPrompts([
-                "How much loan has India National Bank given to it's customer?",
-                "Compare Q1 2024 sales with Q1 2023.",
-                "Show sales trends for 2024.",
-              ]);
-        setInsightLoading(false);
-      }, 2000);
-    };
+  const handleInsightData = () => {
+    setInsightLoading(true);
+    const promptResponses = [
+      {
+        keywords: ["loan", "China Development Bank"],
+        query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
+                JOIN customer c ON lt.CustomerID = c.CustomerID 
+                JOIN banks b ON lt.BankID = b.BankID 
+                WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
+        data: [
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+        ],
+        insights: "The total loan given by China Development Bank is $300,000.",
+        nextPrompts: [
+          "How much loan has India National Bank given to its customers?",
+          "Compare Q1 2024 loan approvals with Q1 2023.",
+          "Show loan trends for 2024.",
+          "Give me top regions based on sales"
+        ]
+      },
+      {
+        keywords: ["sales", "top regions"],
+        query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
+                GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+        data: [
+          { region: "North", sales: "$500,000" },
+          { region: "South", sales: "$450,000" },
+          { region: "East", sales: "$420,000" },
+          { region: "West", sales: "$410,000" },
+          { region: "Central", sales: "$400,000" }
+        ],
+        insights: "The North region had the highest sales in 2024.",
+        nextPrompts: [
+          "What are the sales for Q2 2024?",
+          "Compare sales trends between 2023 and 2024.",
+          "Which product category performed best?",
+          "Give me top 3 customers based on highest revenue?"
+        ]
+      },
+      {
+        keywords: ["customer", "highest revenue"],
+        query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
+                FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
+        data: [
+          { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
+          { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
+          { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
+        ],
+        insights: "TechCorp Ltd. was the highest revenue-generating customer.",
+        nextPrompts: [
+          "Which customer had the highest profit margin?",
+          "Compare revenue trends between 2023 and 2024.",
+          "Which product had the highest revenue?",
+          "How much loan did China Development Bank gave to its customers?"
+        ]
+      }
+    ];
+    setTimeout(() => {
+      let response = {
+        query: "No data found for this prompt.",
+        data: [],
+        insights: "No insights available for this prompt.",
+        nextPrompts: []
+      };
+  
+      // Match the prompt against the keyword-based responses
+      for (const item of promptResponses) {
+        if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
+          response = item;
+          break;
+        }
+      }
+      setInsights(response.insights);
+      setNextPrompts(response.nextPrompts);
+      setInsightLoading(false);
+    }, 2000);
+  };
 
     const handleLinkClick = (text) => {
     // Populate the TextField with the clicked link
@@ -111,34 +245,35 @@ const BusinessUserTab = () => {
       )}
 
       {data.length > 0 && (
-        <Box sx={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column' }}
-        >
-        <TableContainer component={Paper} sx={{ mt: 2, mb: 2, width: "100%" }}>
-          <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>Retrieved Data:</Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: "bold" }}>Customer Name</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Loan Amount</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Bank Name</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell>{row.customerName}</TableCell>
-                  <TableCell>{row.loanAmount}</TableCell>
-                  <TableCell>{row.bank}</TableCell>
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+          <TableContainer component={Paper} sx={{ mt: 2, mb: 2, width: "100%" }}>
+            <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>
+              Retrieved Data:
+            </Typography>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {Object.keys(data[0]).map((key) => (
+                    <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
+                      {key.replace(/([A-Z])/g, " $1").trim()} {/* Formats camelCase to readable text */}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {data.map((row, index) => (
+                  <TableRow key={index}>
+                    {Object.keys(row).map((key) => (
+                      <TableCell key={key}>{row[key]}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       )}
+
 
     {data.length > 0 && (
         <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
