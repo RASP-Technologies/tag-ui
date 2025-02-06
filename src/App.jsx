@@ -13,7 +13,7 @@ const App = () => {
 
   return (
     <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0, backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <AppBar position="static" sx={{ width: '100%', maxWidth: '100%', backgroundColor: "#1976d2", boxShadow: "none" }}>
+      <AppBar position="static" sx={{ width: '100%', maxWidth: '100%', backgroundColor: "#FF000", boxShadow: "none" }}>
         <Tabs
           value={tabIndex}
           onChange={handleTabChange}
@@ -24,7 +24,7 @@ const App = () => {
           sx={{ "& .MuiTab-root": { fontSize: '1.2rem', color: "white", fontWeight: "bold", textTransform: "none" , alignItems: "left"}
           ,"& .MuiTabs-flexContainer": { justifyContent: 'flex-start'}
           }}
-        >
+        >ˀ
           <Tab label="Insight" />
           <Tab label="Optimize" />
           <Tab label="Recommendation" />

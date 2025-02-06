@@ -19,6 +19,10 @@ import {
   Toolbar,
   IconButton,
   Link,
+  FormControl,
+  InputLabel, 
+  Select, 
+  MenuItem 
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -33,6 +37,22 @@ const BusinessUserTab = () => {
   const [insightLoading, setInsightLoading] = useState(false);
   const [insightTimeout, setInsightTimeout] = useState(null);
   const textFieldRef = useRef(null);
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 5; // Number of rows per page
+  const [selectedModel, setSelectedModel] = useState('');
+
+  const models = [
+    { value: 'gpt-4', label: 'GPT-4' },
+    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+    { value: 'claude-3', label: 'Claude 3' },
+    { value: 'claude-2', label: 'Claude 2' }
+  ];
+
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setSelectedModel(value);
+    onModelSelect(value); // Callback to parent component
+  };
 
   const handleFetchData = () => {
     setLoading(true);
@@ -59,6 +79,11 @@ const BusinessUserTab = () => {
         query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
                 GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
         data: [
+          { region: "North", sales: "$500,000" },
+          { region: "South", sales: "$450,000" },
+          { region: "East", sales: "$420,000" },
+          { region: "West", sales: "$410,000" },
+          { region: "Central", sales: "$400,000" },
           { region: "North", sales: "$500,000" },
           { region: "South", sales: "$450,000" },
           { region: "East", sales: "$420,000" },
@@ -210,17 +235,43 @@ const BusinessUserTab = () => {
      <CssBaseline />
       <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={11}>
+            <Grid item xs={12} sm={10}>
                 <TextField
                     inputRef={textFieldRef}
                     autoFocus
                     fullWidth
-                    label="Enter your prompt"
+                    label="How can I help you ?"
                     variant="outlined"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
                 />
+            </Grid>
+            <Grid item xs={12} sm={1}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+              }}
+            >
+              <FormControl fullWidth size="small">
+                <InputLabel id="model-select-label">LLM</InputLabel>
+                <Select
+                  labelId="model-select-label"
+                  id="model-select"
+                  value={selectedModel}
+                  label="AI Model"
+                  onChange={handleChange}
+                  sx={{ mb: 2 }}
+                >
+                  {models.map((model) => (
+                    <MenuItem key={model.value} value={model.value}>
+                      {model.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={1}
                 sx={{
@@ -243,49 +294,64 @@ const BusinessUserTab = () => {
       {query && (
 
       <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={5} sx={{ alignSelf: 'flex-start' }}>
-              <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Paper sx={{ mt: 3, mb: 2, p: 2, width: "100%" }}>
-                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1976d2" }}>Executed Query:</Typography>
-                  <Typography variant="body2" fontFamily="monospace">{query}</Typography>
-                </Paper>
-               </Box>
-            {data.length > 0 && (
-                <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
+          <Grid item xs={12} sm={6}>
+                {data.length > 0 && (
+                  <Paper sx={{ p: 2, minHeight: 400, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <Box>
+                    <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>
+                        Retrieved Data:
+                    </Typography>
+                      <TableContainer  sx={{ maxHeight: 300 }}>
+                        <Table stickyHeader>
+                          <TableHead>
+                            <TableRow>
+                              {Object.keys(data[0]).map((key) => (
+                                <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
+                                  {key.replace(/([A-Z])/g, " $1").trim()} {/* Formats camelCase to readable text */}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                              <TableRow key={index}>
+                                {Object.keys(row).map((key) => (
+                                  <TableCell key={key}>{row[key]}</TableCell>
+                                ))}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                      </Box>
+                      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                        {Array.from({ length: Math.ceil(data.length / rowsPerPage) }, (_, index) => (
+                          <Button
+                            key={index}
+                            variant={page === index ? "contained" : "outlined"}
+                            onClick={() => setPage(index)}
+                            sx={{ mx: 0.5 }}
+                          >
+                            {index + 1}
+                          </Button>
+                        ))}
+                      </Box>
+                    
+                  </Paper>
+                )}
+                {data.length > 0 && (
+                <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mt: 2 }}>
                   Get Insights
                 </Button>
               )}
           </Grid>
-          <Grid item xs={12} sm={7} sx={{ alignSelf: 'flex-start' }}>
-                {data.length > 0 && (
-                  <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <TableContainer component={Paper} sx={{ mt: 2, mb: 2, width: "100%" }}>
-                      <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>
-                        Retrieved Data:
-                      </Typography>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            {Object.keys(data[0]).map((key) => (
-                              <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
-                                {key.replace(/([A-Z])/g, " $1").trim()} {/* Formats camelCase to readable text */}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {data.map((row, index) => (
-                            <TableRow key={index}>
-                              {Object.keys(row).map((key) => (
-                                <TableCell key={key}>{row[key]}</TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Box>
-                )}
+          <Grid item xs={12} sm={5} sx={{ alignSelf: 'flex-start' }}>
+            <Paper sx={{ p: 2, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1976d2" }}>Executed Query:</Typography>
+                <Typography variant="body2" fontFamily="monospace">{query}</Typography>
+              </Box>
+            </Paper>
           </Grid>
       </Grid>
    )}

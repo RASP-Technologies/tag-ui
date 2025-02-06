@@ -86,7 +86,7 @@ const TechnicalAnalystTab = () => {
                     inputRef={textFieldRef}
                     autoFocus
                     fullWidth
-                    label="Enter your prompt"
+                    label="Want to optimize your query ?"
                     variant="outlined"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
@@ -101,7 +101,7 @@ const TechnicalAnalystTab = () => {
                            textAlign: 'center'
                          }}>
                      <Button variant="contained" color="primary" onClick={handleExecuteQuery} sx={{ mb: 2 , alignItems: 'center',typography: 'caption'}}>
-                             Execute Query
+                             EXECUTE
                    </Button>
              </Grid>
          </Grid>
