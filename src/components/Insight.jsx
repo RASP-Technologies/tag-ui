@@ -206,80 +206,94 @@ const BusinessUserTab = () => {
     };
 
   return (
-   <Container maxWidth="xl" sx={{ width: '100vw', height: '130vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Center the content */}
+   <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0, backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
      <CssBaseline />
-       <AppBar position="static">
-         <Toolbar>
-           <IconButton edge="start" color="inherit" aria-label="menu">
-             <MenuIcon />
-           </IconButton>
-           <Typography variant="h6" style={{ flexGrow: 1 }}>
-             Data Insights
-           </Typography>
-         </Toolbar>
-       </AppBar>
-
       <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <TextField
-            inputRef={textFieldRef}
-            autoFocus
-            fullWidth
-            label="Enter your prompt"
-            variant="outlined"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
-          />
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item xs={12} sm={11}>
+                <TextField
+                    inputRef={textFieldRef}
+                    autoFocus
+                    fullWidth
+                    label="Enter your prompt"
+                    variant="outlined"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                />
+            </Grid>
+            <Grid item xs={12} sm={1}
+                sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      textAlign: 'center'
+                    }}>
+              <Button variant="contained" color="primary" onClick={handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption'}}>
+                Generate
+              </Button>
+            </Grid>
+        </Grid>
       </Box>
-      <Button variant="contained" color="primary" onClick={handleFetchData} sx={{ mb: 2 }}>
-        Fetch Data
-      </Button>
+
 
       {loading && <CircularProgress sx={{ mt: 2 }} />}
-      
+
+
       {query && (
-        <Paper sx={{ mt: 3, p: 2, width: "100%" }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1976d2" }}>Executed Query:</Typography>
-          <Typography variant="body2" fontFamily="monospace">{query}</Typography>
-        </Paper>
-      )}
 
-      {data.length > 0 && (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-          <TableContainer component={Paper} sx={{ mt: 2, mb: 2, width: "100%" }}>
-            <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>
-              Retrieved Data:
-            </Typography>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {Object.keys(data[0]).map((key) => (
-                    <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
-                      {key.replace(/([A-Z])/g, " $1").trim()} {/* Formats camelCase to readable text */}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.map((row, index) => (
-                  <TableRow key={index}>
-                    {Object.keys(row).map((key) => (
-                      <TableCell key={key}>{row[key]}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      )}
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item xs={12} sm={5} sx={{ alignSelf: 'flex-start' }}>
+              <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Paper sx={{ mt: 3, mb: 2, p: 2, width: "100%" }}>
+                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1976d2" }}>Executed Query:</Typography>
+                  <Typography variant="body2" fontFamily="monospace">{query}</Typography>
+                </Paper>
+               </Box>
+            {data.length > 0 && (
+                <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
+                  Get Insights
+                </Button>
+              )}
+          </Grid>
+          <Grid item xs={12} sm={7} sx={{ alignSelf: 'flex-start' }}>
+                {data.length > 0 && (
+                  <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <TableContainer component={Paper} sx={{ mt: 2, mb: 2, width: "100%" }}>
+                      <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>
+                        Retrieved Data:
+                      </Typography>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            {Object.keys(data[0]).map((key) => (
+                              <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
+                                {key.replace(/([A-Z])/g, " $1").trim()} {/* Formats camelCase to readable text */}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {data.map((row, index) => (
+                            <TableRow key={index}>
+                              {Object.keys(row).map((key) => (
+                                <TableCell key={key}>{row[key]}</TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Box>
+                )}
+          </Grid>
+      </Grid>
+   )}
 
 
-    {data.length > 0 && (
-        <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
-          Get Insights
-        </Button>
-      )}
+
+
+
 
     { insightLoading && <CircularProgress sx={{ mt: 2 }} />}
 

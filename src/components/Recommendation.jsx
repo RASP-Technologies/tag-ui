@@ -135,18 +135,8 @@ const App = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Center the content */}
+    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0, backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
       <CssBaseline />
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
-            BigQuery Recommendation & Optimizer
-          </Typography>
-        </Toolbar>
-      </AppBar>
 
       <Box sx={{ mt: 2, mb: 2, width: '100%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>        
         {/* Time Range Display */}

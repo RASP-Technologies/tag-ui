@@ -77,79 +77,92 @@ const TechnicalAnalystTab = () => {
     };
 
   return (
-    <Container maxWidth="xl" sx={{ width: '100vw', height: '120vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Center the content */}
+    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0, backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
      <CssBaseline />
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="menu">
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" style={{ flexGrow: 1 }}>
-              Query Analyser
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
       <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <TextField
-            inputRef={textFieldRef}
-            autoFocus
-            fullWidth
-            label="Enter your prompt"
-            variant="outlined"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
-          />
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+              <Grid item xs={12} sm={11}>
+                  <TextField
+                    inputRef={textFieldRef}
+                    autoFocus
+                    fullWidth
+                    label="Enter your prompt"
+                    variant="outlined"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                  />
+             </Grid>
+             <Grid item xs={12} sm={1}
+                     sx={{
+                           display: 'flex',
+                           justifyContent: 'center',
+                           alignItems: 'center',
+                           textAlign: 'center'
+                         }}>
+                     <Button variant="contained" color="primary" onClick={handleExecuteQuery} sx={{ mb: 2 , alignItems: 'center',typography: 'caption'}}>
+                             Execute Query
+                   </Button>
+             </Grid>
+         </Grid>
       </Box>
-      <Button variant="contained" color="primary" onClick={handleExecuteQuery} sx={{ mb: 2 }}>
-        Execute Query
-      </Button>
+
 
       {loading && <CircularProgress sx={{ mt: 2 }} />}
       
       {optimizedQuery && (
-        <Paper sx={{ mt: 3, p: 2, width: "100%" }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1976d2" }}>Optimized Query:</Typography>
-          <Typography variant="body2" fontFamily="monospace">{optimizedQuery}</Typography>
-        </Paper>
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid item xs={12} sm={5} sx={{ alignSelf: 'flex-start' }}>
+          <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Paper sx={{ mt: 3, mb: 2, p: 2, width: "100%" }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1976d2" }}>Optimized Query:</Typography>
+              <Typography variant="body2" fontFamily="monospace">{optimizedQuery}</Typography>
+            </Paper>
+            </Box>
+          {data.length > 0 && (
+              <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
+                Get Insights
+              </Button>
+            )}
+        </Grid>
+
+        <Grid item xs={12} sm={7} sx={{ alignSelf: 'flex-start' }}>
+            {data.length > 0 && (
+                    <Box sx={{ height: '450px', // Fixed container height
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column' }}
+                    >
+                    <TableContainer component={Paper} sx={{ mt: 2, mb : 2, width: "100%", maxHeight: 440, overflow: 'auto', table: { tableLayout: 'fixed' }}}>
+                      <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>Retrieved Data:</Typography>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>Region</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Sales</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>Revenue</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {data.map((row, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{row.region}</TableCell>
+                              <TableCell>{row.sales}</TableCell>
+                              <TableCell>{row.revenue}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    </Box>
+                  )}
+            </Grid>
+        </Grid>
       )}
 
-      {data.length > 0 && (
-        <Box sx={{ height: '450px', // Fixed container height
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column' }}
-        >
-        <TableContainer component={Paper} sx={{ mt: 2, mb : 2, width: "100%", maxHeight: 440, overflow: 'auto', table: { tableLayout: 'fixed' }}}>
-          <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>Retrieved Data:</Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: "bold" }}>Region</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Sales</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Revenue</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell>{row.region}</TableCell>
-                  <TableCell>{row.sales}</TableCell>
-                  <TableCell>{row.revenue}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        </Box>
-      )}
 
-      {data.length > 0 && (
-          <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2 }}>
-            Get Insights
-          </Button>
-        )}
+
+
 
       {insightLoading && <CircularProgress sx={{ mt: 2 }} />}
 
