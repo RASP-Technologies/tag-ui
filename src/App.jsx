@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Container, AppBar, Tabs, Tab, Box, Typography } from "@mui/material";
-import BusinessUserTab from "./components/BusinessUserTab";
-import TechnicalAnalystTab from "./components/TechnicalAnalystTab";
-import BigQueryOptimizationTab from "./components/BigQueryOptimizationTab";
+import Insight from "./components/Insight";
+import Optimize from "./components/Optimize";
+import Recommendation from "./components/Recommendation";
 
 const App = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -25,16 +25,16 @@ const App = () => {
           ,"& .MuiTabs-flexContainer": { justifyContent: 'flex-start'}
           }}
         >
-          <Tab label="Business User" />
-          <Tab label="Technical Analyst" />
-          <Tab label="BigQuery Optimization" />
+          <Tab label="Insight" />
+          <Tab label="Optimize" />
+          <Tab label="Recommendation" />
         </Tabs>
       </AppBar>
 
       <Box sx={{ flexGrow: 1, p: 3, display: "flex", justifyContent: "center", alignItems: "center" }}>
-        {tabIndex === 0 && <BusinessUserTab />}
-        {tabIndex === 1 && <TechnicalAnalystTab />}
-        {tabIndex === 2 && <BigQueryOptimizationTab />}
+        {tabIndex === 0 && <Insight />}
+        {tabIndex === 1 && <Optimize />}
+        {tabIndex === 2 && <Recommendation />}
       </Box>
     </Container>
   );
