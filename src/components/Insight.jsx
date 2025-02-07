@@ -44,22 +44,28 @@ const BusinessUserTab = () => {
   const [query, setQuery] = useState("");
   const [optimizedQuery, setOptimizedQuery] = useState("");
   const [data, setData] = useState([]);
-  const [insights, setInsights] = useState("");
+  const [insights, setInsights] = useState([]);
   const [inference, setInference] = useState("");
   const [nextPrompts, setNextPrompts] = useState([]);
   const [insightLoading, setInsightLoading] = useState(false);
   const [insightTimeout, setInsightTimeout] = useState(null);
   const textFieldRef = useRef(null);
   //const rowsPerPage = 5; // Number of rows per page
-  const [selectedModel, setSelectedModel] = useState('');
+  const [selectedModel, setSelectedModel] = useState('openai');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [optimizedQueryBeforeClick, setOptimizedQueryBeforeClick] = useState("");
+  const [dataBeforeClick, setDataBeforeClick] = useState([]);
+  const [insightsBeforeClick, setInsightsBeforeClick] = useState([]);
+  const [nextPromptsBeforeClick, setNextPromptsBeforeClick] = useState([]);
+
   const models = [
-    { value: 'gpt-4', label: 'GPT-4' },
-    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-    { value: 'claude-3', label: 'Claude 3' },
-    { value: 'claude-2', label: 'Claude 2' }
+    { value: 'openai', label: 'openai' },
+    { value: 'palm2', label: 'palm2' },
+    { value: 'llama', label: 'llama' },
+    { value: 'gemini-pro', label: 'gemini-pro' },
+    { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro' }
   ];
 
   const handleChange = (event) => {
@@ -68,206 +74,244 @@ const BusinessUserTab = () => {
     onModelSelect(value); // Callback to parent component
   };
 
-  const handleFetchData = () => {
+  const handleFetchData = async () => {
     setGenerateLoading(true);
   
-    const promptResponses = [
-      {
-        keywords: ["loan", "China Development Bank"],
-        query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
-                JOIN customer c ON lt.CustomerID = c.CustomerID 
-                JOIN banks b ON lt.BankID = b.BankID 
-                WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
-        data: [
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" }
-        ],
-        insights: "The total loan given by China Development Bank is $300,000.",
-        nextPrompts: [
-          "How much loan has India National Bank given to its customers?",
-          "Compare Q1 2024 loan approvals with Q1 2023.",
-          "Show loan trends for 2024."
-        ]
-      },
-      {
-        keywords: ["sales", "top regions"],
-        query: `SELECT region, SUM(sales) AS total_sales FROM sales_data
-                GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-        data: [
-          { region: "North", sales: "$500,000" },
-          { region: "South", sales: "$450,000" },
-          { region: "East", sales: "$420,000" },
-          { region: "West", sales: "$410,000" },
-          { region: "Central", sales: "$400,000" }
-        ],
-        insights: "The North region had the highest sales in 2024.",
-        nextPrompts: [
-          "What are the sales for Q2 2024?",
-          "Compare sales trends between 2023 and 2024.",
-          "Show sales trends for 2024."
-        ]
-      },
-      {
-        keywords: ["sales", "top regions"],
-        query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
-                GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-        data: [
-          { region: "North", sales: "$500,000" },
-          { region: "South", sales: "$450,000" },
-          { region: "East", sales: "$420,000" },
-          { region: "West", sales: "$410,000" },
-          { region: "Central", sales: "$400,000" },
-          { region: "North", sales: "$500,000" },
-          { region: "South", sales: "$450,000" },
-          { region: "East", sales: "$420,000" },
-          { region: "West", sales: "$410,000" },
-          { region: "Central", sales: "$400,000" }
-        ],
-        insights: "The North region had the highest sales in 2024.",
-        nextPrompts: [
-          "What are the sales for Q2 2024?",
-          "Compare sales trends between 2023 and 2024.",
-          "Which product category performed best?"
-        ]
-      },
-      {
-        keywords: ["customer", "top revenue"],
-        query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
-                FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
-        data: [
-          { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
-          { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
-          { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
-        ],
-        insights: "TechCorp Ltd. was the highest revenue-generating customer.",
-        nextPrompts: [
-          "Which customer had the highest profit margin?",
-          "Compare revenue trends between 2023 and 2024.",
-          "Which product had the highest revenue?"
-        ]
+    // const promptResponses = [
+    //   {
+    //     keywords: ["loan", "China Development Bank"],
+    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
+    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
+    //             JOIN banks b ON lt.BankID = b.BankID 
+    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
+    //     data: [
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" }
+    //     ],
+    //     insights: "The total loan given by China Development Bank is $300,000.",
+    //     nextPrompts: [
+    //       "How much loan has India National Bank given to its customers?",
+    //       "Compare Q1 2024 loan approvals with Q1 2023.",
+    //       "Show loan trends for 2024."
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["sales", "top regions"],
+    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data
+    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+    //     data: [
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" }
+    //     ],
+    //     insights: "The North region had the highest sales in 2024.",
+    //     nextPrompts: [
+    //       "What are the sales for Q2 2024?",
+    //       "Compare sales trends between 2023 and 2024.",
+    //       "Show sales trends for 2024."
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["sales", "top regions"],
+    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
+    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+    //     data: [
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" },
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" }
+    //     ],
+    //     insights: "The North region had the highest sales in 2024.",
+    //     nextPrompts: [
+    //       "What are the sales for Q2 2024?",
+    //       "Compare sales trends between 2023 and 2024.",
+    //       "Which product category performed best?"
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["customer", "top revenue"],
+    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
+    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
+    //     data: [
+    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
+    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
+    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
+    //     ],
+    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
+    //     nextPrompts: [
+    //       "Which customer had the highest profit margin?",
+    //       "Compare revenue trends between 2023 and 2024.",
+    //       "Which product had the highest revenue?"
+    //     ]
+    //   }
+    // ];
+
+    try {
+      const response = await fetch("http://localhost:8082/generate_insights", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: prompt, // Sending prompt as 'query'
+          llm_type: "openai"
+        }),
+      });
+
+      if(!response.ok) {
+        throw new Error('API request failed with status ${response.status}')
       }
-    ];
-  
-    setTimeout(() => {
-      let response = {
-        query: "No data found for this prompt.",
-        data: [],
-        insights: "No insights available for this prompt.",
-        nextPrompts: []
-      };
-  
-      // Match the prompt against the keyword-based responses
-      for (const item of promptResponses) {
-        if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
-          response = item;
-          break;
-        }
-      }
-  
-      setQuery(response.query);
-      setOptimizedQuery(response.query);
-      setData(response.data);
-      setInsights("");
-      setNextPrompts("");
+
+      const apiData = await response.json();
+
+      // Set the state with API response
+      setQuery(apiData.sql_query_generated || "No query generated.");
+      setOptimizedQueryBeforeClick(apiData.sql_query_optimised || "No query generated.");
+      setDataBeforeClick(apiData.result || []);
+      setInsightsBeforeClick(apiData.textual_summary || []);
+      setNextPromptsBeforeClick(apiData.followup_prompts || []);
+
+    } catch (error) {
+      console.error("Error fetching insights:", error);
+      setQuery("Error generating query.");
+      setOptimizedQueryBeforeClick("Error generating query.");
+      setDataBeforeClick([]);
+      setInsightsBeforeClick("Fail to generate insights.");
+      setNextPromptsBeforeClick([]);
+    } finally {
       setGenerateLoading(false);
-    }, 2000);
+    }
+  
+    // setTimeout(() => {
+    //   let response = {
+    //     query: "No data found for this prompt.",
+    //     data: [],
+    //     insights: "No insights available for this prompt.",
+    //     nextPrompts: []
+    //   };
+  
+    //   // Match the prompt against the keyword-based responses
+    //   for (const item of promptResponses) {
+    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
+    //       response = item;
+    //       break;
+    //     }
+    //   }
+  
+    //   setQuery(response.query);
+    //   setOptimizedQuery(response.query);
+    //   setData(response.data);
+    //   setInsights("");
+    //   setNextPrompts("");
+    //   setGenerateLoading(false);
+    // }, 2000);
   };  
 
   const handleInsightData = () => {
     setInsightLoading(true);
-    const promptResponses = [
-      {
-        keywords: ["loan"],
-        query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
-                JOIN customer c ON lt.CustomerID = c.CustomerID 
-                JOIN banks b ON lt.BankID = b.BankID 
-                WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
+    // const promptResponses = [
+    //   {
+    //     keywords: ["loan"],
+    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
+    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
+    //             JOIN banks b ON lt.BankID = b.BankID 
+    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
 
-        optimizedQuery: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt
-                        JOIN customer c ON lt.CustomerID = c.CustomerID
-                        JOIN banks b ON lt.BankID = b.BankID
-                        WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
-        data: [
-          { customerName: "Auto Parts Corp1", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp2", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp3", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp4", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp5", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp6", loanAmount: "$300,000", bank: "China Development Bank" },
-          { customerName: "Auto Parts Corp7", loanAmount: "$300,000", bank: "China Development Bank" },
+    //     optimizedQuery: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt
+    //                     JOIN customer c ON lt.CustomerID = c.CustomerID
+    //                     JOIN banks b ON lt.BankID = b.BankID
+    //                     WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
+    //     data: [
+    //       { customerName: "Auto Parts Corp1", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp2", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp3", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp4", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp5", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp6", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp7", loanAmount: "$300,000", bank: "China Development Bank" },
 
-        ],
-        insights: [ "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
-                    "The total loan given by China Development Bank is $300,000",
-                    "The total loan given by China Development Bank is $300,000"],
-        nextPrompts: [
-          "How much loan has India National Bank given to its customers?",
-          "Compare Q1 2024 loan approvals with Q1 2023.",
-          "Show loan trends for 2024.",
-          "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
-        ]
-      },
-      {
-        keywords: ["sales", "top regions"],
-        query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
-                GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-        data: [
-          { region: "North", sales: "$500,000" },
-          { region: "South", sales: "$450,000" },
-          { region: "East", sales: "$420,000" },
-          { region: "West", sales: "$410,000" },
-          { region: "Central", sales: "$400,000" }
-        ],
-        insights: "The North region had the highest sales in 2024.",
-        nextPrompts: [
-          "What are the sales for Q2 2024?",
-          "Compare sales trends between 2023 and 2024.",
-          "Which product category performed best?",
-          "Give me top 3 customers based on highest revenue?"
-        ]
-      },
-      {
-        keywords: ["customer", "highest revenue"],
-        query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
-                FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
-        data: [
-          { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
-          { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
-          { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
-        ],
-        insights: "TechCorp Ltd. was the highest revenue-generating customer.",
-        nextPrompts: [
-          "Which customer had the highest profit margin?",
-          "Compare revenue trends between 2023 and 2024.",
-          "Which product had the highest revenue?",
-          "How much loan did China Development Bank gave to its customers?"
-        ]
-      }
-    ];
+    //     ],
+    //     insights: [ "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
+    //                 "The total loan given by China Development Bank is $300,000",
+    //                 "The total loan given by China Development Bank is $300,000"],
+    //     nextPrompts: [
+    //       "How much loan has India National Bank given to its customers?",
+    //       "Compare Q1 2024 loan approvals with Q1 2023.",
+    //       "Show loan trends for 2024.",
+    //       "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["sales", "top regions"],
+    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
+    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+    //     data: [
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" }
+    //     ],
+    //     insights: "The North region had the highest sales in 2024.",
+    //     nextPrompts: [
+    //       "What are the sales for Q2 2024?",
+    //       "Compare sales trends between 2023 and 2024.",
+    //       "Which product category performed best?",
+    //       "Give me top 3 customers based on highest revenue?"
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["customer", "highest revenue"],
+    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
+    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
+    //     data: [
+    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
+    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
+    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
+    //     ],
+    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
+    //     nextPrompts: [
+    //       "Which customer had the highest profit margin?",
+    //       "Compare revenue trends between 2023 and 2024.",
+    //       "Which product had the highest revenue?",
+    //       "How much loan did China Development Bank gave to its customers?"
+    //     ]
+    //   }
+    // ];
     setTimeout(() => {
-      let response = {
-        query: "No data found for this prompt.",
-        data: [],
-        insights: "No insights available for this prompt.",
-        nextPrompts: []
-      };
+    //   let response = {
+    //     query: "No data found for this prompt.",
+    //     data: [],
+    //     insights: "No insights available for this prompt.",
+    //     nextPrompts: []
+    //   };
   
-      // Match the prompt against the keyword-based responses
-      for (const item of promptResponses) {
-        if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
-          response = item;
-          break;
-        }
-      }
-      setInsights(response.insights);
-      setNextPrompts(response.nextPrompts);
+    //   // Match the prompt against the keyword-based responses
+    //   for (const item of promptResponses) {
+    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
+    //       response = item;
+    //       break;
+    //     }
+    //   }
+      setData(dataBeforeClick);
+      setOptimizedQuery(optimizedQueryBeforeClick);
+      setInsights(insightsBeforeClick);
+      setNextPrompts(nextPromptsBeforeClick);
       setInsightLoading(false);
     }, 2000);
   };
@@ -281,10 +325,10 @@ const BusinessUserTab = () => {
   };
 
     const handleInsightClick = () => {
-      setInsightLoading(true);
+      // setInsightLoading(true);
       // Simulate an async operation
       setTimeout(() => {
-        setInsightLoading(false);
+        setInsightLoading(true);
       }, 2000); // 2 seconds delay
     };
 
@@ -368,7 +412,7 @@ const BusinessUserTab = () => {
                       alignItems: 'center',
                       textAlign: 'center'
                     }}>
-              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleGenerateClick && handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption'}}>
+              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={ handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption'}}>
                 Generate
               </LoadingButton>
             </Grid>
@@ -445,14 +489,14 @@ const BusinessUserTab = () => {
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightClick && handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption'}}>
+                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption'}}>
                                                 Optimize & Get Insights
                 </LoadingButton>
                 </Box>
           </Grid>
 {/*            { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
-          { optimizedQuery && insights && (
+          { optimizedQuery && insights.length > 0 && (
               <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
                 <Box
                       sx={{
@@ -514,7 +558,7 @@ const BusinessUserTab = () => {
                           overflowX: 'auto',
                         }}
                       >
-                        {query}
+                        {optimizedQuery}
                       </Box>
                     </Box>
               </Grid>
@@ -530,9 +574,9 @@ const BusinessUserTab = () => {
 
 {/*      { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
-    { insights && (
+    {  insights.length > 0 && (
 
-      <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc'}}>
+      <Grid container bgcolor='white' spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc', height: '700px'}}>
                 <Grid item xs={12} sm={6}>
                       {data.length > 0 && (
                           <Box
@@ -735,10 +779,9 @@ const BusinessUserTab = () => {
                             <List sx={{ padding: 0 }}>
                                <ListItem sx={{ py: 0.5 }}>
                                    <ListItemIcon >
-
-                                           <SendSharpIcon sx={{ fontSize: 'large' }} />
+                                   <SendSharpIcon sx={{ fontSize: 'large' }} />
                                    </ListItemIcon>
-                                    <Typography variant="body1" component="span">
+                                    <Typography variant="body2" component="span">
                                          {p}
                                     </Typography>
 
@@ -785,7 +828,7 @@ const BusinessUserTab = () => {
                         >
                           Suggested Next Prompts:
                         </Typography>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Box variant="subtitle2" sx={{ display: 'flex', gap: 1 }}>
 {/*                           <IconButton size="small"> */}
 {/*                             <AccessTimeIcon sx={{ fontSize: 18 }} /> */}
 {/*                           </IconButton> */}
