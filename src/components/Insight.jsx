@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, theme } from "react";
 import {
   TextField,
   Button,
@@ -12,6 +12,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Grid,
   Container,
   CssBaseline,
@@ -22,14 +23,26 @@ import {
   FormControl,
   InputLabel, 
   Select, 
-  MenuItem 
+  MenuItem
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
+import { LoadingButton } from '@mui/lab';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PedalBikeIcon from '@mui/icons-material/PedalBike';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import StarIcon from '@mui/icons-material/Star';
+import SendSharpIcon from '@mui/icons-material/SendSharp';
+import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
 
 const BusinessUserTab = () => {
   const [prompt, setPrompt] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [generateLoading, setGenerateLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [optimizedQuery, setOptimizedQuery] = useState("");
   const [data, setData] = useState([]);
   const [insights, setInsights] = useState("");
   const [inference, setInference] = useState("");
@@ -37,9 +50,10 @@ const BusinessUserTab = () => {
   const [insightLoading, setInsightLoading] = useState(false);
   const [insightTimeout, setInsightTimeout] = useState(null);
   const textFieldRef = useRef(null);
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 5; // Number of rows per page
+  //const rowsPerPage = 5; // Number of rows per page
   const [selectedModel, setSelectedModel] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const models = [
     { value: 'gpt-4', label: 'GPT-4' },
@@ -55,7 +69,7 @@ const BusinessUserTab = () => {
   };
 
   const handleFetchData = () => {
-    setLoading(true);
+    setGenerateLoading(true);
   
     const promptResponses = [
       {
@@ -66,12 +80,38 @@ const BusinessUserTab = () => {
                 WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
         data: [
           { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" }
         ],
         insights: "The total loan given by China Development Bank is $300,000.",
         nextPrompts: [
           "How much loan has India National Bank given to its customers?",
           "Compare Q1 2024 loan approvals with Q1 2023.",
           "Show loan trends for 2024."
+        ]
+      },
+      {
+        keywords: ["sales", "top regions"],
+        query: `SELECT region, SUM(sales) AS total_sales FROM sales_data
+                GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+        data: [
+          { region: "North", sales: "$500,000" },
+          { region: "South", sales: "$450,000" },
+          { region: "East", sales: "$420,000" },
+          { region: "West", sales: "$410,000" },
+          { region: "Central", sales: "$400,000" }
+        ],
+        insights: "The North region had the highest sales in 2024.",
+        nextPrompts: [
+          "What are the sales for Q2 2024?",
+          "Compare sales trends between 2023 and 2024.",
+          "Show sales trends for 2024."
         ]
       },
       {
@@ -132,10 +172,11 @@ const BusinessUserTab = () => {
       }
   
       setQuery(response.query);
+      setOptimizedQuery(response.query);
       setData(response.data);
       setInsights("");
       setNextPrompts("");
-      setLoading(false);
+      setGenerateLoading(false);
     }, 2000);
   };  
 
@@ -143,20 +184,34 @@ const BusinessUserTab = () => {
     setInsightLoading(true);
     const promptResponses = [
       {
-        keywords: ["loan", "China Development Bank"],
+        keywords: ["loan"],
         query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
                 JOIN customer c ON lt.CustomerID = c.CustomerID 
                 JOIN banks b ON lt.BankID = b.BankID 
-                WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
+                WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
+
+        optimizedQuery: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt
+                        JOIN customer c ON lt.CustomerID = c.CustomerID
+                        JOIN banks b ON lt.BankID = b.BankID
+                        WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
         data: [
-          { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp1", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp2", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp3", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp4", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp5", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp6", loanAmount: "$300,000", bank: "China Development Bank" },
+          { customerName: "Auto Parts Corp7", loanAmount: "$300,000", bank: "China Development Bank" },
+
         ],
-        insights: "The total loan given by China Development Bank is $300,000.",
+        insights: [ "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
+                    "The total loan given by China Development Bank is $300,000",
+                    "The total loan given by China Development Bank is $300,000"],
         nextPrompts: [
           "How much loan has India National Bank given to its customers?",
           "Compare Q1 2024 loan approvals with Q1 2023.",
           "Show loan trends for 2024.",
-          "Give me top regions based on sales"
+          "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
         ]
       },
       {
@@ -217,21 +272,54 @@ const BusinessUserTab = () => {
     }, 2000);
   };
 
-    const handleLinkClick = (text) => {
-    // Populate the TextField with the clicked link
-    setPrompt(text);
+  const handleGenerateClick = () => {
+    setGenerateLoading(true);
+    // Simulate an async operation
     setTimeout(() => {
-      if (textFieldRef.current) {
-        textFieldRef.current.focus();
+      setGenerateLoading(false);
+    }, 2000); // 2 seconds delay
+  };
 
-        // Select all text in the TextField
-        textFieldRef.current.select();
-      }
-    }, 100);
+    const handleInsightClick = () => {
+      setInsightLoading(true);
+      // Simulate an async operation
+      setTimeout(() => {
+        setInsightLoading(false);
+      }, 2000); // 2 seconds delay
     };
 
+    const handleLinkClick = (text) => {
+        // Populate the TextField with the clicked link
+        setPrompt(text);
+        setTimeout(() => {
+          if (textFieldRef.current) {
+            textFieldRef.current.focus();
+
+            // Select all text in the TextField
+            textFieldRef.current.select();
+          }
+        }, 100);
+    };
+
+  // Handle page change
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Handle rows per page change
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Reset to the first page
+  };
+
+  // Slice the data based on the current page and rows per page
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
+  const displayRows = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+
+
   return (
-   <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0, backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
+   <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0,  minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
      <CssBaseline />
       <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
@@ -280,118 +368,487 @@ const BusinessUserTab = () => {
                       alignItems: 'center',
                       textAlign: 'center'
                     }}>
-              <Button variant="contained" color="primary" onClick={handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption'}}>
+              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleGenerateClick && handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption'}}>
                 Generate
-              </Button>
+              </LoadingButton>
             </Grid>
         </Grid>
       </Box>
 
 
-      {loading && <CircularProgress sx={{ mt: 2 }} />}
-
+{/*       {loading && <CircularProgress sx={{ mt: 2 }} />} */}
 
       {query && (
-
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6}>
-                {data.length > 0 && (
-                  <Paper sx={{ p: 2, minHeight: 400, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <Box>
-                    <Typography variant="h6" sx={{ p: 2, fontWeight: "bold", color: "#1976d2" }}>
-                        Retrieved Data:
-                    </Typography>
-                      <TableContainer  sx={{ maxHeight: 300 }}>
-                        <Table stickyHeader>
-                          <TableHead>
-                            <TableRow>
-                              {Object.keys(data[0]).map((key) => (
-                                <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
-                                  {key.replace(/([A-Z])/g, " $1").trim()} {/* Formats camelCase to readable text */}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                              <TableRow key={index}>
-                                {Object.keys(row).map((key) => (
-                                  <TableCell key={key}>{row[key]}</TableCell>
-                                ))}
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                      </Box>
-                      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                        {Array.from({ length: Math.ceil(data.length / rowsPerPage) }, (_, index) => (
-                          <Button
-                            key={index}
-                            variant={page === index ? "contained" : "outlined"}
-                            onClick={() => setPage(index)}
-                            sx={{ mx: 0.5 }}
-                          >
-                            {index + 1}
-                          </Button>
-                        ))}
-                      </Box>
-                    
-                  </Paper>
-                )}
-                {data.length > 0 && (
-                <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mt: 2 }}>
-                  Get Insights
-                </Button>
-              )}
-          </Grid>
-          <Grid item xs={12} sm={5} sx={{ alignSelf: 'flex-start' }}>
-            <Paper sx={{ p: 2, minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1976d2" }}>Executed Query:</Typography>
-                <Typography variant="body2" fontFamily="monospace">{query}</Typography>
-              </Box>
-            </Paper>
-          </Grid>
-      </Grid>
-   )}
-
-
-
-
-
-
-    { insightLoading && <CircularProgress sx={{ mt: 2 }} />}
-
-    { insights && (
-      <Paper sx={{ mt: 2, p: 2, width: "100%" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#388e3c" }}>Insights:</Typography>
-        <Typography>{insights}</Typography>
-      </Paper>
-      )}
-
-      {nextPrompts.length > 0 && (
-        <Paper sx={{ mt: 2, p: 2, width: "100%" }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ff9800" }}>Suggested Next Prompts:</Typography>
-          {nextPrompts.map((p, index) => (
-            <Typography key={index}>
-                <Link
-                    component="button"
-                    color="primary"
-                    underline="hover"
-                    onClick={() => handleLinkClick(p)}
+        <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc'}}>
+          <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
+            <Box
+                  sx={{
+                    width: '100%',
+                    mb: 2,
+                    borderRadius: 1,
+                    overflow: 'hidden',
+                    boxShadow: 1,
+                    bgcolor: 'background.paper',
+                  }}
+                >
+                  {/* Header */}
+                  <Box
                     sx={{
-                      typography: 'body1',
-
-                      cursor: 'pointer'
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      px: 2,
+                      py: 1,
+                      borderBottom: 1,
+                      borderColor: 'divider',
+                      backgroundColor: '#eaecec', // Background color for the header
+                      color: 'black',
                     }}
                   >
-                - {p}
-                </Link>
-                </Typography>
-          ))}
-        </Paper>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                      }}
+                    >
+                      Generated Query
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <IconButton size="small">
+                        <AccessTimeIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                      <IconButton size="small">
+                        <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+
+                  {/* SQL Content */}
+                  <Box
+                    sx={{
+                      p: 2,
+                      //backgroundColor: (theme) => theme.palette.primary.dark, // Dark blue background
+                      backgroundColor: '#bbdffc',
+                      color: 'black',
+                      fontFamily: 'monospace',
+                      fontWeight: 'bold',
+                      fontSize: '0.875rem',
+                      whiteSpace: 'pre-wrap',
+                      overflowX: 'auto',
+                    }}
+                  >
+                    {query}
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightClick && handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption'}}>
+                                                Optimize & Get Insights
+                </LoadingButton>
+                </Box>
+          </Grid>
+{/*            { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
+
+          { optimizedQuery && insights && (
+              <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
+                <Box
+                      sx={{
+                        width: '100%',
+                        maxWidth: '900px',
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        boxShadow: 1,
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      {/* Header */}
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          px: 2,
+                          py: 1,
+                          borderBottom: 1,
+                          borderColor: 'divider',
+                          backgroundColor: '#eaecec', // Background color for the header
+                          color: 'black',
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                          }}
+                        >
+                          Optimized Query
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <IconButton size="small">
+                            <AccessTimeIcon sx={{ fontSize: 18 }} />
+                          </IconButton>
+                          <IconButton size="small">
+                            <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
+                          </IconButton>
+                        </Box>
+                      </Box>
+
+                      {/* SQL Content */}
+                      <Box
+                        sx={{
+                          p: 2,
+                          //backgroundColor: (theme) => theme.palette.primary.dark, // Dark blue background
+                          backgroundColor: '#defaec',
+                          color: 'black',
+                          fontFamily: 'monospace',
+                          fontWeight: 'bold',
+                          fontSize: '0.875rem',
+                          whiteSpace: 'pre-wrap',
+                          overflowX: 'auto',
+                        }}
+                      >
+                        {query}
+                      </Box>
+                    </Box>
+              </Grid>
+          )}
+      </Grid>
+
       )}
+
+{/*       {query && ( */}
+
+
+{/*    )} */}
+
+{/*      { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
+
+    { insights && (
+
+      <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc'}}>
+                <Grid item xs={12} sm={6}>
+                      {data.length > 0 && (
+                          <Box
+                              sx={{
+                                width: '100%',
+                                maxWidth: '900px',
+                                borderRadius: 1,
+                                overflow: 'hidden',
+                                boxShadow: 1,
+                                bgcolor: 'background.paper',
+                              }}
+                          >
+                              {/* Header */}
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              px: 2,
+                              py: 1,
+                              borderBottom: 1,
+                              borderColor: 'divider',
+                              backgroundColor: '#eaecec', // Background color for the header
+                              color: 'black',
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: 'text.secondary',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                              }}
+                            >
+                              Retrieved Data
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                              <IconButton size="small">
+                                <AccessTimeIcon sx={{ fontSize: 18 }} />
+                              </IconButton>
+                              <IconButton size="small">
+                                <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
+                              </IconButton>
+                            </Box>
+                          </Box>
+                              <Box sx={{
+                                           padding: '20px', // Adjust the padding value as needed
+      //                                      border: '1px solid #ccc', // Optional: Adds a border for better visualization
+      //                                      borderRadius: '4px', // Optional: Rounds the corners
+                                           backgroundColor: 'white', // Optional: Adds a background color
+                                           display: 'flex', // Optional: Aligns content inside the box
+                                           justifyContent: 'center', // Optional: Centers content horizontally
+                                           alignItems: 'center', // Optional: Centers content vertically
+      //                                      width: '700px', // Optional: Sets the width of the box
+      //                                      height: '200px', // Optional: Sets the height of the box
+                                         }}
+                                     >
+                                <TableContainer  sx={{ border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
+                                  <Table stickyHeader>
+                                    <TableHead sx={{
+                                       '& .MuiTableCell-head': {
+                                         backgroundColor: '#f5f5f5', // Background color for the header
+                                         color: 'black', // Text color for the header
+                                       },
+                                     }}>
+                                      <TableRow>
+                                        {Object.keys(data[0]).map((key) => (
+                                          <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize", borderRight: '1px solid #ccc' }}>
+                                            {key.replace(/([A-Z])/g, " $1").trim()} {/* Formats camelCase to readable text */}
+
+                                          </TableCell>
+                                        ))}
+
+                                      </TableRow>
+                                    </TableHead>
+
+                                    <TableBody sx={{  overflowY: 'auto' }} >
+                                    {displayRows.map((row, index) => (
+                                      <TableRow key={index}>
+                                          {Object.keys(row).map((key) => (
+                                            <TableCell sx={{ borderRight: '1px solid #ccc' }} key={key}>{row[key]}</TableCell>
+                                          ))}
+                                      </TableRow>
+                                    ))}
+                                    {emptyRows > 0 && (
+                                      <TableRow style={{ height: 53 * emptyRows }}>
+                                        <TableCell colSpan={5} />
+                                      </TableRow>
+                                    )}
+                                  </TableBody>
+
+
+      {/*                               <TableBody sx={{ border: '1px solid #ccc' }}> */}
+      {/*                                 {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => ( */}
+      {/*                                   <TableRow key={index}> */}
+      {/*                                     {Object.keys(row).map((key) => ( */}
+      {/*                                       <TableCell sx={{ borderRight: '1px solid #ccc' }} key={key}>{row[key]}</TableCell> */}
+      {/*                                     ))} */}
+      {/*                                   </TableRow> */}
+      {/*                                 ))} */}
+      {/*                               </TableBody> */}
+                                  </Table>
+                                </TableContainer>
+
+
+
+                                </Box>
+                                    <TablePagination
+                                          rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                          component="div"
+                                          count={data.length}
+                                          rowsPerPage={rowsPerPage}
+                                          page={page}
+                                          onPageChange={handleChangePage}
+                                          onRowsPerPageChange={handleChangeRowsPerPage}
+                                    />
+      {/*                           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}> */}
+      {/*                             {Array.from({ length: Math.ceil(data.length / rowsPerPage) }, (_, index) => ( */}
+      {/*                               <Button */}
+      {/*                                 key={index} */}
+      {/*                                 variant={page === index ? "contained" : "outlined"} */}
+      {/*                                 onClick={() => setPage(index)} */}
+      {/*                                 sx={{ mx: 0.5 }} */}
+      {/*                               > */}
+      {/*                                 {index + 1} */}
+      {/*                               </Button> */}
+      {/*                             ))} */}
+      {/*                           </Box> */}
+                             </Box>
+                      )}
+      {/*                 {data.length > 0 && ( */}
+      {/*                 <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mt: 2 }}> */}
+      {/*                   Get Insights */}
+      {/*                 </Button> */}
+      {/*               )} */}
+                </Grid>
+
+                <Grid item xs={12} sm={5.9} sx={{ alignSelf: 'flex-start'}}>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        mb: 2,
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        boxShadow: 1,
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      {/* Header */}
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          px: 2,
+                          py: 1,
+                          borderBottom: 1,
+                          borderColor: 'divider',
+                          backgroundColor: '#eaecec', // Background color for the header
+                          color: 'black',
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                          }}
+                        >
+                          Insights
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <IconButton size="small">
+                            <AccessTimeIcon sx={{ fontSize: 18 }} />
+                          </IconButton>
+                          <IconButton size="small">
+                            <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
+                          </IconButton>
+                        </Box>
+                      </Box>
+
+                      {/* SQL Content */}
+                      <Box
+                        sx={{
+                          p: 2,
+
+                          color: 'black',
+                          //fontFamily: 'monospace',
+                          fontSize: '0.875rem',
+                          whiteSpace: 'pre-wrap',
+                          overflowX: 'auto',
+                        }}
+                      >
+                        {insights.map((p, index) => (
+                            <List sx={{ padding: 0 }}>
+                               <ListItem sx={{ py: 0.5 }}>
+                                   <ListItemIcon >
+
+                                           <SendSharpIcon sx={{ fontSize: 'large' }} />
+                                   </ListItemIcon>
+                                    <Typography variant="body1" component="span">
+                                         {p}
+                                    </Typography>
+
+                               </ListItem>
+                            </List>
+                        ))}
+                      </Box>
+                    </Box>
+
+                    { nextPrompts.length > 0 && (
+                    <Box
+                      sx={{
+                        width: '100%',
+                        mb: 2,
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        boxShadow: 1,
+                        bgcolor: 'background.paper',
+                      }}
+                    >
+                      {/* Header */}
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          px: 2,
+                          py: 1,
+                          borderBottom: 1,
+                          borderColor: 'divider',
+                          backgroundColor: '#eaecec', // Background color for the header
+                          color: 'black',
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                          }}
+                        >
+                          Suggested Next Prompts:
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+{/*                           <IconButton size="small"> */}
+{/*                             <AccessTimeIcon sx={{ fontSize: 18 }} /> */}
+{/*                           </IconButton> */}
+{/*                           <IconButton size="small"> */}
+{/*                             <PedalBikeIcon sx={{ fontSize: 18 }} /> */}
+{/*                           </IconButton> */}
+                        </Box>
+                      </Box>
+
+                      {/* SQL Content */}
+                      <Box
+                        sx={{
+                          p: 2,
+
+                          color: 'black',
+                          //fontFamily: 'monospace',
+                          fontSize: '0.875rem',
+                          whiteSpace: 'pre-wrap',
+                          overflowX: 'auto',
+                        }}
+                      >
+
+                          { nextPrompts.map((p, index) => (
+
+                              <List sx={{ padding: 0 }}>
+                                 <ListItem sx={{ py: 0.5 }}>
+                                     <ListItemIcon >
+
+                                             <SendSharpIcon sx={{ fontSize: 'large' }} />
+                                     </ListItemIcon>
+                                      <Typography key={index}  variant="body1" component="span">
+                                           <Link
+                                               align="left"
+                                               component="button"
+                                               color="primary"
+                                               underline="hover"
+                                               onClick={() => handleLinkClick(p)}
+                                               sx={{
+                                                 typography: 'body1',
+
+                                                 cursor: 'pointer'
+                                               }}
+                                             >
+                                           {p}
+                                        </Link>
+                                      </Typography>
+
+                                 </ListItem>
+                              </List>
+
+                          ))}
+
+                      </Box>
+
+                    </Box>
+                  )}
+                </Grid>
+
+      </Grid>
+
+      )}
+
+
     </Container>
   );
 };

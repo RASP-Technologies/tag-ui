@@ -12,7 +12,7 @@ const App = () => {
   };
 
   return (
-    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0, backgroundColor: "#f4f6f8", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0,  minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <AppBar position="static" sx={{ width: '100%', maxWidth: '100%', backgroundColor: "#FF000", boxShadow: "none" }}>
         <Tabs
           value={tabIndex}
