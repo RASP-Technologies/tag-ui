@@ -76,7 +76,7 @@ const Recommendation = () => {
   const [viewReportLoading, setViewReportLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [recommendations, setRecommendations] = useState([]);
+  const [recommendationsReport, setRecommendationsReport] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -89,6 +89,78 @@ const Recommendation = () => {
 
   const [loading, setLoading] = useState(false); // New loading state
 
+    const recommendations = [
+    {
+      category: 'Performance',
+      recommendation: 'Optimize JOIN operations',
+      files: 'query1.sql',
+      queryChange: 'Yes',
+      appChange: 'No',
+      schemaChange: 'No',
+      previousQuery: 'SELECT * FROM table1 JOIN table2 ON table1.id = table2.id',
+      optimizedQuery: 'SELECT table1.col1, table2.col2 FROM table1 JOIN table2 ON table1.id = table2.id',
+    },
+    {
+      category: 'Cost',
+      recommendation: 'Reduce data scanned',
+      files: 'query2.sql',
+      queryChange: 'Yes',
+      appChange: 'Yes',
+      schemaChange: 'No',
+      previousQuery: 'SELECT * FROM large_table',
+      optimizedQuery: 'SELECT col1, col2 FROM large_table WHERE condition = true',
+    },
+    {
+      category: 'Readability',
+      recommendation: 'Use CTEs for complex queries',
+      files: 'query3.sql',
+      queryChange: 'No',
+      appChange: 'No',
+      schemaChange: 'No',
+      previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
+      optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
+    },
+    {
+      category: 'Readability',
+      recommendation: 'Use CTEs for complex queries',
+      files: 'query4.sql',
+      queryChange: 'No',
+      appChange: 'No',
+      schemaChange: 'No',
+      previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
+      optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
+    },
+    {
+      category: 'Readability',
+      recommendation: 'Use CTEs for complex queries',
+      files: 'query5.sql',
+      queryChange: 'No',
+      appChange: 'No',
+      schemaChange: 'No',
+      previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
+      optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
+    },
+    {
+      category: 'Readability',
+      recommendation: 'Use CTEs for complex queries',
+      files: 'query6.sql',
+      queryChange: 'No',
+      appChange: 'No',
+      schemaChange: 'No',
+      previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
+      optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
+    },
+    {
+      category: 'Readability',
+      recommendation: 'Use CTEs for complex queries',
+      files: 'query6.sql',
+      queryChange: 'No',
+      appChange: 'No',
+      schemaChange: 'No',
+      previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
+      optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
+    }
+];
   useEffect(() => {
     // Set the end time to the current time when the component mounts
     const now = new Date();
@@ -132,80 +204,15 @@ const Recommendation = () => {
 
     const handleViewReportData = () => {
         setViewReportLoading(true);
-        const recommendations = [
-            {
-              category: 'Performance',
-              recommendation: 'Optimize JOIN operations',
-              files: 'query1.sql',
-              queryChange: 'Yes',
-              appChange: 'No',
-              schemaChange: 'No',
-              previousQuery: 'SELECT * FROM table1 JOIN table2 ON table1.id = table2.id',
-              optimizedQuery: 'SELECT table1.col1, table2.col2 FROM table1 JOIN table2 ON table1.id = table2.id',
-            },
-            {
-              category: 'Cost',
-              recommendation: 'Reduce data scanned',
-              files: 'query2.sql',
-              queryChange: 'Yes',
-              appChange: 'Yes',
-              schemaChange: 'No',
-              previousQuery: 'SELECT * FROM large_table',
-              optimizedQuery: 'SELECT col1, col2 FROM large_table WHERE condition = true',
-            },
-            {
-              category: 'Readability',
-              recommendation: 'Use CTEs for complex queries',
-              files: 'query3.sql',
-              queryChange: 'No',
-              appChange: 'No',
-              schemaChange: 'No',
-              previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-              optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-            },
-            {
-              category: 'Readability',
-              recommendation: 'Use CTEs for complex queries',
-              files: 'query4.sql',
-              queryChange: 'No',
-              appChange: 'No',
-              schemaChange: 'No',
-              previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-              optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-            },
-            {
-              category: 'Readability',
-              recommendation: 'Use CTEs for complex queries',
-              files: 'query5.sql',
-              queryChange: 'No',
-              appChange: 'No',
-              schemaChange: 'No',
-              previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-              optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-            },
-            {
-              category: 'Readability',
-              recommendation: 'Use CTEs for complex queries',
-              files: 'query6.sql',
-              queryChange: 'No',
-              appChange: 'No',
-              schemaChange: 'No',
-              previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-              optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-            },
-        ];
         setTimeout(() => {
-          let response = {
-            files: "No data found "
-          };
-         setRecommendations(recommendations);
+         setRecommendationsReport(recommendations);
          setViewReportLoading(false);
         }, 2000);
     };
   // Summary counts
   const summaryCounts = {
     schemasAnalyzed: 5, // Example count
-    sqlFilesAnalyzed: 100,//recommendations.length,
+    sqlFilesAnalyzed: recommendations.length,//recommendations.length,
     recommendations: 10, // Example count
   };
 
@@ -426,7 +433,7 @@ const Recommendation = () => {
 
         </Grid>
 
-        { recommendations.length > 0 && (
+        { recommendationsReport.length > 0 && (
                 <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw'
                         , border: '1px solid #ccc'
                         }}>
@@ -498,12 +505,6 @@ const Recommendation = () => {
                                        },
                                      }}>
                                       <TableRow>
-        {/*                                 {Object.keys(recommendations[0]).map((key) => ( */}
-        {/*                                   <TableCell key={key} sx={{ fontWeight: "bold", textTransform: "capitalize", borderRight: '1px solid #ccc' }}> */}
-        {/*                                     {key.replace(/([A-Z])/g, " $1").trim()}  */}{/* Formats camelCase to readable text */}
-
-        {/*                                   </TableCell> */}
-        {/*                                 ))} */}
                                         <TableCell align="left" style={{ fontWeight: 'bold' }}>Category</TableCell>
                                         <TableCell align="left" style={{ fontWeight: 'bold' }}>Recommendation</TableCell>
                                         <TableCell align="left" style={{ fontWeight: 'bold' }}>Files/Queries</TableCell>
@@ -535,19 +536,6 @@ const Recommendation = () => {
                                               <TableCell colSpan={5} />
                                             </TableRow>
                                           )}
-
-        {/*                             {recommendations.map((row, index) => ( */}
-        {/*                               <TableRow key={index}> */}
-        {/*                                   {Object.keys(row).map((key) => ( */}
-        {/*                                     <TableCell sx={{ borderRight: '1px solid #ccc' }} key={key}>{row[key]}</TableCell> */}
-        {/*                                   ))} */}
-        {/*                               </TableRow> */}
-        {/*                             ))} */}
-        {/*                             {emptyRows > 0 && ( */}
-        {/*                               <TableRow style={{ height: 53 * emptyRows }}> */}
-        {/*                                 <TableCell colSpan={5} /> */}
-        {/*                               </TableRow> */}
-        {/*                             )} */}
                                   </TableBody>
                                   </Table>
                                 </TableContainer>
@@ -556,7 +544,7 @@ const Recommendation = () => {
                                     <TablePagination
                                           rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                           component="div"
-                                          count={recommendations.length}
+                                          count={recommendationsReport.length}
                                           rowsPerPage={rowsPerPage}
                                           page={page}
                                           onPageChange={handleChangePage}
@@ -568,39 +556,6 @@ const Recommendation = () => {
             </Grid>
         )}
       <Box sx={{ mt: 2, mb: 2, width: '100%', flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-{/*         <TableContainer component={Paper} sx={{ mt: 3, boxShadow: '0px 2px 5px rgba(0,0,0,0.1)', width: '100%', maxWidth: 'none' }}> */}
-{/*           <Table sx={{ width: '100%' }}> */}
-{/*             <TableHead> */}
-{/*               <TableRow> */}
-{/*                 <TableCell align="left" style={{ fontWeight: 'bold' }}>Category</TableCell> */}
-{/*                 <TableCell align="left" style={{ fontWeight: 'bold' }}>Recommendation</TableCell> */}
-{/*                 <TableCell align="left" style={{ fontWeight: 'bold' }}>Files/Queries</TableCell> */}
-{/*                 <TableCell align="center" style={{ fontWeight: 'bold' }}>Query Change Required</TableCell> */}
-{/*                 <TableCell align="center" style={{ fontWeight: 'bold' }}>Application Code Change Required</TableCell> */}
-{/*                 <TableCell align="center" style={{ fontWeight: 'bold' }}>Schema Change Required</TableCell> */}
-{/*                 <TableCell align="center" style={{ fontWeight: 'bold' }}>Action</TableCell> */}
-{/*               </TableRow> */}
-{/*             </TableHead> */}
-{/*             <TableBody> */}
-{/*               {recommendations.map((rec, index) => ( */}
-{/*                 <TableRow key={index}> */}
-{/*                   <TableCell align="left">{rec.category}</TableCell> */}
-{/*                   <TableCell align="left">{rec.recommendation}</TableCell> */}
-{/*                   <TableCell align="left">{rec.files}</TableCell> */}
-{/*                   <TableCell align="center">{rec.queryChange}</TableCell> */}
-{/*                   <TableCell align="center">{rec.appChange}</TableCell> */}
-{/*                   <TableCell align="center">{rec.schemaChange}</TableCell> */}
-{/*                   <TableCell align="center"> */}
-{/*                     <StyledButton onClick={() => handleApplyRecommendation(rec)}> */}
-{/*                       Optimize */}
-{/*                     </StyledButton> */}
-{/*                   </TableCell> */}
-{/*                 </TableRow> */}
-{/*               ))} */}
-{/*             </TableBody> */}
-{/*           </Table> */}
-{/*         </TableContainer> */}
-
         <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
           <MuiAlert onClose={handleCloseSnackbar} severity="info">
             {snackbarMessage}
