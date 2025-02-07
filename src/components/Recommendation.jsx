@@ -84,15 +84,15 @@ const Recommendation = () => {
 
 
   // State for time range
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(subDays(new Date(), 1));
+  const [startTime, setStartTime] = useState(subDays(new Date(), 1));
+  const [endTime, setEndTime] = useState(new Date());
 
   const [loading, setLoading] = useState(false); // New loading state
 
   useEffect(() => {
     // Set the end time to the current time when the component mounts
     const now = new Date();
-    setEndTime(subDays(new Date(), 1));
+    setStartTime(subDays(new Date(), 1));
   }, []);
 
   const handleApplyRecommendation = (rec) => {
@@ -205,8 +205,8 @@ const Recommendation = () => {
   // Summary counts
   const summaryCounts = {
     schemasAnalyzed: 5, // Example count
-    sqlFilesAnalyzed: 3,//recommendations.length,
-    logsAnalyzed: 10, // Example count
+    sqlFilesAnalyzed: 100,//recommendations.length,
+    recommendations: 10, // Example count
   };
 
     // Handle page change
@@ -319,10 +319,10 @@ const Recommendation = () => {
                       <Grid item xs={12} sm={4} sx={{ alignSelf: 'flex-start'}}>
                             <SummaryBox>
                               <Typography variant="h6">
-                                Logs Analyzed
+                                Recommendations
                               </Typography>
                               <Typography variant="h3">
-                                {summaryCounts.logsAnalyzed}
+                                {summaryCounts.recommendations}
                               </Typography>
                             </SummaryBox>
                       </Grid>
