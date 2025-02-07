@@ -77,68 +77,6 @@ const Recommendation = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [recommendations, setRecommendations] = useState([]);
-//     {
-//       category: 'Performance',
-//       recommendation: 'Optimize JOIN operations',
-//       files: 'query1.sql',
-//       queryChange: 'Yes',
-//       appChange: 'No',
-//       schemaChange: 'No',
-//       previousQuery: 'SELECT * FROM table1 JOIN table2 ON table1.id = table2.id',
-//       optimizedQuery: 'SELECT table1.col1, table2.col2 FROM table1 JOIN table2 ON table1.id = table2.id',
-//     },
-//     {
-//       category: 'Cost',
-//       recommendation: 'Reduce data scanned',
-//       files: 'query2.sql',
-//       queryChange: 'Yes',
-//       appChange: 'Yes',
-//       schemaChange: 'No',
-//       previousQuery: 'SELECT * FROM large_table',
-//       optimizedQuery: 'SELECT col1, col2 FROM large_table WHERE condition = true',
-//     },
-//     {
-//       category: 'Readability',
-//       recommendation: 'Use CTEs for complex queries',
-//       files: 'query3.sql',
-//       queryChange: 'No',
-//       appChange: 'No',
-//       schemaChange: 'No',
-//       previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-//       optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-//     },
-//     {
-//       category: 'Readability',
-//       recommendation: 'Use CTEs for complex queries',
-//       files: 'query4.sql',
-//       queryChange: 'No',
-//       appChange: 'No',
-//       schemaChange: 'No',
-//       previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-//       optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-//     },
-//     {
-//       category: 'Readability',
-//       recommendation: 'Use CTEs for complex queries',
-//       files: 'query5.sql',
-//       queryChange: 'No',
-//       appChange: 'No',
-//       schemaChange: 'No',
-//       previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-//       optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-//     },
-//     {
-//       category: 'Readability',
-//       recommendation: 'Use CTEs for complex queries',
-//       files: 'query6.sql',
-//       queryChange: 'No',
-//       appChange: 'No',
-//       schemaChange: 'No',
-//       previousQuery: 'SELECT * FROM (SELECT * FROM table1) AS subquery',
-//       optimizedQuery: 'WITH subquery AS (SELECT * FROM table1) SELECT * FROM subquery',
-//     },
-//   ];
-
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -577,7 +515,7 @@ const Recommendation = () => {
                                     </TableHead>
 
                                     <TableBody sx={{  overflowY: 'auto' }} >
-                                        {recommendations.map((rec, index) => (
+                                        {displayRows.map((rec, index) => (
                                             <TableRow key={index}>
                                               <TableCell align="left">{rec.category}</TableCell>
                                               <TableCell align="left">{rec.recommendation}</TableCell>
@@ -592,6 +530,11 @@ const Recommendation = () => {
                                               </TableCell>
                                             </TableRow>
                                           ))}
+                                          {emptyRows > 0 && (
+                                            <TableRow style={{ height: 53 * emptyRows }}>
+                                              <TableCell colSpan={5} />
+                                            </TableRow>
+                                          )}
 
         {/*                             {recommendations.map((row, index) => ( */}
         {/*                               <TableRow key={index}> */}
