@@ -212,8 +212,8 @@ const Recommendation = () => {
   // Summary counts
   const summaryCounts = {
     schemasAnalyzed: 5, // Example count
-    sqlFilesAnalyzed: recommendations.length,//recommendations.length,
-    recommendations: 10, // Example count
+    sqlFilesAnalyzed: 56,//recommendations.length,
+    recommendations: recommendations.length, // Example count
   };
 
     // Handle page change
