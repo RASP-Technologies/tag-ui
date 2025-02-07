@@ -39,7 +39,7 @@ import StarIcon from '@mui/icons-material/Star';
 import SendSharpIcon from '@mui/icons-material/SendSharp';
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
-import { subDays } from 'date-fns';
+import { subDays, format } from 'date-fns';
 
 // Styled components
 const SummaryBox = styled(Box)(({ theme }) => ({
@@ -433,14 +433,6 @@ const Recommendation = () => {
                         >
                           Time Range
                         </Typography>
-{/*                         <Box sx={{ display: 'flex', gap: 1 }}> */}
-{/*                           <IconButton size="small"> */}
-{/*                             <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} /> */}
-{/*                           </IconButton> */}
-{/*                           <IconButton size="small"> */}
-{/*                             <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} /> */}
-{/*                           </IconButton> */}
-{/*                         </Box> */}
                       </Box>
 
                       {/* SQL Content */}
@@ -467,8 +459,8 @@ const Recommendation = () => {
                                 <Typography variant="h6">
                                  Start Time
                                 </Typography>
-                                <Typography variant="h5">
-                                  {startTime.toLocaleString()}
+                                <Typography variant="h5" sx={{ fontWeight: 'bold'}}>
+                                  {format(startTime.toLocaleString(), 'yyyy-MM-dd HH:mm:ss')}
                                 </Typography>
                               </TimeRangeBox>
                           </Grid>
@@ -477,8 +469,8 @@ const Recommendation = () => {
                             <Typography variant="h6">
                               End Time
                             </Typography>
-                            <Typography variant="h5">
-                              {endTime.toLocaleString()}
+                            <Typography variant="h5" sx={{ fontWeight: 'bold'}}>
+                              {format(endTime.toLocaleString(), 'yyyy-MM-dd HH:mm:ss')}
                             </Typography>
                           </TimeRangeBox>
                           </Grid>
@@ -486,7 +478,9 @@ const Recommendation = () => {
                       </Box>
                     </Box>
                     <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                      <LoadingButton loading={viewReportLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleViewReportData} sx={{ mb: 2, alignItems: 'center', typography: 'caption'}}>
+                      <LoadingButton loading={viewReportLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained"
+                      color="primary" onClick={handleViewReportData}
+                      sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
                         View Report
                       </LoadingButton>
                     </Box>
