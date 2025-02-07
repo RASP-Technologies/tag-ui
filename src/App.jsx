@@ -21,7 +21,7 @@ const App = () => {
           textColor="inherit"
           indicatorColor="secondary"
           aria-label="secondary tabs example"
-          sx={{ "& .MuiTab-root": { fontSize: '1.2rem', color: "white", fontWeight: "bold", textTransform: "none" , alignItems: "left"}
+          sx={{ "& .MuiTab-root": { fontSize: '1.2rem', color: "white", fontWeight: "bold", fontFamily: 'sans-serif', textTransform: "none" , alignItems: "left"}
           ,"& .MuiTabs-flexContainer": { justifyContent: 'flex-start'}
           }}
         >ˀ
