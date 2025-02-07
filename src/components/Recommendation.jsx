@@ -64,7 +64,7 @@ const CategoriesContainer = styled(Box)({
 });
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#3f51b5',
+  backgroundColor: theme.palette.primary.main,
   color: '#fff',
   '&:hover': {
     backgroundColor: '#303f9f',
