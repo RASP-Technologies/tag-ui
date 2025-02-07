@@ -37,6 +37,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import StarIcon from '@mui/icons-material/Star';
 import SendSharpIcon from '@mui/icons-material/SendSharp';
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 
 const BusinessUserTab = () => {
   const [prompt, setPrompt] = useState("");
@@ -75,6 +76,17 @@ const BusinessUserTab = () => {
   };
 
   const handleFetchData = async () => {
+    // Reset all data
+    setQuery("");
+    setOptimizedQuery("");
+    setData([]);
+    setDataBeforeClick([]);
+    setInsights([]);
+    setInsightsBeforeClick([]);
+    setNextPrompts([]);
+    setNextPromptsBeforeClick([]);
+
+
     setGenerateLoading(true);
   
     // const promptResponses = [
@@ -162,7 +174,7 @@ const BusinessUserTab = () => {
     // ];
 
     try {
-      const response = await fetch("http://localhost:8082/generate_insights", {
+      const response = await fetch("http://localhost:8082/generate_query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -181,18 +193,10 @@ const BusinessUserTab = () => {
 
       // Set the state with API response
       setQuery(apiData.sql_query_generated || "No query generated.");
-      setOptimizedQueryBeforeClick(apiData.sql_query_optimised || "No query generated.");
-      setDataBeforeClick(apiData.result || []);
-      setInsightsBeforeClick(apiData.textual_summary || []);
-      setNextPromptsBeforeClick(apiData.followup_prompts || []);
 
     } catch (error) {
       console.error("Error fetching insights:", error);
       setQuery("Error generating query.");
-      setOptimizedQueryBeforeClick("Error generating query.");
-      setDataBeforeClick([]);
-      setInsightsBeforeClick("Fail to generate insights.");
-      setNextPromptsBeforeClick([]);
     } finally {
       setGenerateLoading(false);
     }
@@ -222,7 +226,7 @@ const BusinessUserTab = () => {
     // }, 2000);
   };  
 
-  const handleInsightData = () => {
+  const handleInsightData = async () => {
     setInsightLoading(true);
     // const promptResponses = [
     //   {
@@ -293,7 +297,7 @@ const BusinessUserTab = () => {
     //     ]
     //   }
     // ];
-    setTimeout(() => {
+    // setTimeout(() => {
     //   let response = {
     //     query: "No data found for this prompt.",
     //     data: [],
@@ -308,12 +312,47 @@ const BusinessUserTab = () => {
     //       break;
     //     }
     //   }
-      setData(dataBeforeClick);
-      setOptimizedQuery(optimizedQueryBeforeClick);
-      setInsights(insightsBeforeClick);
-      setNextPrompts(nextPromptsBeforeClick);
+    //   setData(dataBeforeClick);
+    //   setOptimizedQuery(optimizedQueryBeforeClick);
+    //   setInsights(insightsBeforeClick);
+    //   setNextPrompts(nextPromptsBeforeClick);
+    //   setInsightLoading(false);
+    // }, 2000);
+    try {
+      const response = await fetch("http://localhost:8082/generate_insights", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: prompt, // Sending prompt as 'query'
+          llm_type: "openai"
+        }),
+      });
+  
+      if(!response.ok) {
+        throw new Error('API request failed with status ${response.status}')
+      }
+  
+      const apiData = await response.json();
+  
+      // Set the state with API response
+      setQuery(apiData.sql_query_generated || "No query generated.");
+      setOptimizedQuery(apiData.sql_query_optimised || "No query generated.");
+      setData(apiData.result || []);
+      setInsights(apiData.textual_summary || []);
+      setNextPrompts(apiData.followup_prompts || []);
+  
+    } catch (error) {
+      console.error("Error fetching insights:", error);
+      setQuery("Error generating query.");
+      setOptimizedQuery("Error generating query.");
+      setData([]);
+      setInsights("Fail to generate insights.");
+      setNextPrompts([]);
+    } finally {
       setInsightLoading(false);
-    }, 2000);
+    }
   };
 
   const handleGenerateClick = () => {
@@ -365,9 +404,9 @@ const BusinessUserTab = () => {
   return (
    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0,  minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
      <CssBaseline />
-      <Box sx={{ mt: 2, mb: 2, width: '100%',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Box  sx={{ mt: 2, mb: 2, width: '100%', alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={10}>
+            <Grid item xs={12} sm={9.5}>
                 <TextField
                     inputRef={textFieldRef}
                     autoFocus
@@ -379,7 +418,7 @@ const BusinessUserTab = () => {
                     sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
                 />
             </Grid>
-            <Grid item xs={12} sm={1}
+            <Grid item xs={12} sm={1.5}
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -412,7 +451,7 @@ const BusinessUserTab = () => {
                       alignItems: 'center',
                       textAlign: 'center'
                     }}>
-              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={ handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption'}}>
+              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={ handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
                 Generate
               </LoadingButton>
             </Grid>
@@ -463,7 +502,7 @@ const BusinessUserTab = () => {
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <IconButton size="small">
-                        <AccessTimeIcon sx={{ fontSize: 18 }} />
+                        <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} />
                       </IconButton>
                       <IconButton size="small">
                         <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
@@ -489,7 +528,7 @@ const BusinessUserTab = () => {
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption'}}>
+                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
                                                 Optimize & Get Insights
                 </LoadingButton>
                 </Box>
@@ -536,7 +575,7 @@ const BusinessUserTab = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                           <IconButton size="small">
-                            <AccessTimeIcon sx={{ fontSize: 18 }} />
+                            <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} />
                           </IconButton>
                           <IconButton size="small">
                             <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
@@ -617,7 +656,7 @@ const BusinessUserTab = () => {
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 1 }}>
                               <IconButton size="small">
-                                <AccessTimeIcon sx={{ fontSize: 18 }} />
+                                <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} />
                               </IconButton>
                               <IconButton size="small">
                                 <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
@@ -755,7 +794,7 @@ const BusinessUserTab = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                           <IconButton size="small">
-                            <AccessTimeIcon sx={{ fontSize: 18 }} />
+                            <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} />
                           </IconButton>
                           <IconButton size="small">
                             <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
@@ -830,7 +869,7 @@ const BusinessUserTab = () => {
                         </Typography>
                         <Box variant="subtitle2" sx={{ display: 'flex', gap: 1 }}>
 {/*                           <IconButton size="small"> */}
-{/*                             <AccessTimeIcon sx={{ fontSize: 18 }} /> */}
+{/*                             <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} /> */}
 {/*                           </IconButton> */}
 {/*                           <IconButton size="small"> */}
 {/*                             <PedalBikeIcon sx={{ fontSize: 18 }} /> */}
