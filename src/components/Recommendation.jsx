@@ -538,7 +538,9 @@ const Recommendation = () => {
                                               <TableCell align="center">{rec.appChange}</TableCell>
                                               <TableCell align="center">{rec.schemaChange}</TableCell>
                                               <TableCell align="center">
-                                                <StyledButton onClick={() => handleApplyRecommendation(rec)}>
+                                                <StyledButton disabled={rec.queryChange === 'No'}
+                                                sx={{ backgroundColor: rec.queryChange === 'No' ? 'grey' : '#1976d2' }}
+                                                onClick={() => handleApplyRecommendation(rec)}>
                                                   Optimize
                                                 </StyledButton>
                                               </TableCell>
