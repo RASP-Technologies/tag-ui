@@ -3,7 +3,7 @@ setlocal
 
 REM Set paths
 set BACKEND_DIR=C:\TechDemo\textToSql_4\text-to-Sql
-set FRONTEND_DIR=C:\TechDemo\tag-ui\tag-ui
+set FRONTEND_DIR=C:\TechDemo\tag-ui-main\tag-ui-main
 
 echo ========================================
 echo 🔧 Setting up Backend...
