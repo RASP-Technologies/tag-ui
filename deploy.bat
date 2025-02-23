@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 REM Start Backend
 echo ✅ Starting Backend...
-start cmd /k "cd /d %BACKEND_DIR% && call venv\Scripts\activate && python ai_price_predictor.py"
+start cmd /k "cd /d %BACKEND_DIR% && call venv\Scripts\activate && python app.py"
 
 echo ========================================
 echo 🚀 Setting up UI...
