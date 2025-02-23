@@ -2,7 +2,7 @@
 setlocal
 
 REM Set paths
-set BACKEND_DIR=C:\TechDemo\textToSql_4
+set BACKEND_DIR=C:\TechDemo\textToSql_4\text-to-Sql
 set FRONTEND_DIR=C:\TechDemo\tag-ui\tag-ui
 
 echo ========================================
