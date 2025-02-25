@@ -110,29 +110,29 @@ const Recommendation = () => {
       previousQuery: `BEGIN
                       DECLARE LN_COUNT INT64;
                       DECLARE LV_FLAG STRING;
-                        SET LN_COUNT = (SELECT COUNT(*) FROM dhiraj_coe.EMPLOYEES);
+                        SET LN_COUNT = (SELECT COUNT(*) FROM coe.EMPLOYEES);
                         IF LN_COUNT >0
                         THEN
-                            UPDATE dhiraj_coe.EMPLOYEES
+                            UPDATE coe.EMPLOYEES
                             SET Salary = Salary+Salary*50/100
                             WHERE Salary BETWEEN 5000 AND 10000;
 
-                            UPDATE dhiraj_coe.EMPLOYEES
+                            UPDATE coe.EMPLOYEES
                             SET Salary = Salary+Salary*40/100
                             WHERE Salary BETWEEN 10001 AND 20000;
 
-                            UPDATE dhiraj_coe.EMPLOYEES
+                            UPDATE coe.EMPLOYEES
                             SET Salary = Salary+Salary*30/100
                             WHERE Salary BETWEEN 20001 AND 30000;
 
-                            UPDATE dhiraj_coe.EMPLOYEES
+                            UPDATE coe.EMPLOYEES
                             SET Salary = Salary+Salary*10/100
                             WHERE Salary > 30000;
                           END IF;
                       END;
 `,
       optimizedQuery: `BEGIN
-                         UPDATE dhiraj_coe.EMPLOYEES
+                         UPDATE coe.EMPLOYEES
                          SET Salary = CASE
                            WHEN Salary BETWEEN 5000 AND 10000 THEN Salary + Salary * 50 / 100
                            WHEN Salary BETWEEN 10001 AND 20000 THEN Salary + Salary * 40 / 100

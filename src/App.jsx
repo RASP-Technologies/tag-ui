@@ -27,14 +27,14 @@ const App = () => {
         >ˀ
           <Tab label="Insight" />
           <Tab label="Optimize" />
-          <Tab label="Recommendation" />
+          {/* <Tab label="Recommendation" /> */}
         </Tabs>
       </AppBar>
 
       <Box sx={{ flexGrow: 1, p: 3, display: "flex", justifyContent: "center", alignItems: "center" }}>
         {tabIndex === 0 && <Insight />}
         {tabIndex === 1 && <Optimize />}
-        {tabIndex === 2 && <Recommendation />}
+        {/* {tabIndex === 2 && <Recommendation />} */}
       </Box>
     </Container>
   );
