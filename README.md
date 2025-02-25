@@ -4,6 +4,12 @@
 npm install
 npm run dev
 ```
+# How to run in local machine
+
+```
+npm install
+npm run dev -- --host 0.0.0.0
+```
 
 # React + Vite
 
