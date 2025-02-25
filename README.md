@@ -4,7 +4,7 @@
 npm install
 npm run dev
 ```
-# How to run in local machine
+# How to run in GCP Ubuntu VM machine
 
 ```
 npm install
