@@ -11,6 +11,10 @@ npm install
 npm run dev -- --host 0.0.0.0
 ```
 
+To start in detach mode
+
+`nohup npm run dev -- --host 0.0.0.0 > tag-ui/app.log 2>&1 &`
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
