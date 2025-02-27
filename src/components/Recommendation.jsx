@@ -418,7 +418,7 @@ const Recommendation = () => {
                                  Start Time
                                 </Typography>
                                 <Typography variant="h5" sx={{ fontWeight: 'bold'}}>
-                                  {format(startTime.toLocaleString(), 'yyyy-MM-dd HH:mm:ss')}
+                                  {startTime ? format(startTime, 'yyyy-MM-dd HH:mm:ss') : 'N/A'}
                                 </Typography>
                               </TimeRangeBox>
                           </Grid>
@@ -428,7 +428,7 @@ const Recommendation = () => {
                               End Time
                             </Typography>
                             <Typography variant="h5" sx={{ fontWeight: 'bold'}}>
-                              {format(endTime.toLocaleString(), 'yyyy-MM-dd HH:mm:ss')}
+                              {endTime ? format(endTime, 'yyyy-MM-dd HH:mm:ss') : 'N/A'}
                             </Typography>
                           </TimeRangeBox>
                           </Grid>
