@@ -26,6 +26,7 @@ import {
   MenuItem,
   Dialog, DialogTitle, DialogContent, DialogActions
 } from "@mui/material";
+
 import MenuIcon from '@mui/icons-material/Menu';
 import { LoadingButton } from '@mui/lab';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -40,7 +41,7 @@ import SendSharpIcon from '@mui/icons-material/SendSharp';
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 
-const TechnicalAnalystTab = () => {
+const BusinessUserTab = () => {
   const [prompt, setPrompt] = useState("");
   const [generateLoading, setGenerateLoading] = useState(false);
   const [query, setQuery] = useState("");
@@ -56,13 +57,17 @@ const TechnicalAnalystTab = () => {
   const [selectedModel, setSelectedModel] = useState('openai');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [optimizedQueryBeforeClick, setOptimizedQueryBeforeClick] = useState("");
+  const [dataBeforeClick, setDataBeforeClick] = useState([]);
+  const [insightsBeforeClick, setInsightsBeforeClick] = useState([]);
+  const [nextPromptsBeforeClick, setNextPromptsBeforeClick] = useState([]);
+
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errorPrompts, setErrorPrompts] = useState([]);
-    const [selectedValue, setSelectedValue] = useState('');
-    const [subscription, setSubscription] = useState('');
-  const [selectedDataCategory, setSelectedDataCategory] = useState('Market Data');
-  const [selectedDataSubCategory, setSelectedDataSubCategory] = useState('Payments');
+
+
   const models = [
     { value: 'openai', label: 'openai' },
     { value: 'palm2', label: 'palm2' },
@@ -71,33 +76,9 @@ const TechnicalAnalystTab = () => {
     { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro' }
   ];
 
-  const dataCategory = [
-      { value: 'Market Data', label: 'Market Data' },
-      { value: 'Finance Data', label: 'Finance Data' }
-    ];
-
-  const dataSubCategory = [
-      { value: 'Payments', label: 'Payments' },
-      { value: 'Cyber', label: 'Cyber' },
-      { value: 'Cards', label: 'Cards' },
-      { value: 'Frauds', label: 'Frauds' }
-    ];
-
   const handleChange = (event) => {
     const value = event.target.value;
     setSelectedModel(value);
-    onModelSelect(value); // Callback to parent component
-  };
-
-  const handleDataCategoryChange = (event) => {
-    const value = event.target.value;
-    setSelectedDataCategory(value);
-    onModelSelect(value); // Callback to parent component
-  };
-
-  const handleDataSubCategoryChange = (event) => {
-    const value = event.target.value;
-    setSelectedDataSubCategory(value);
     onModelSelect(value); // Callback to parent component
   };
 
@@ -106,13 +87,101 @@ const TechnicalAnalystTab = () => {
     setQuery("");
     setOptimizedQuery("");
     setData([]);
+    setDataBeforeClick([]);
     setInsights([]);
+    setInsightsBeforeClick([]);
     setNextPrompts([]);
+    setNextPromptsBeforeClick([]);
+
 
     setGenerateLoading(true);
+  
+    // const promptResponses = [
+    //   {
+    //     keywords: ["loan", "China Development Bank"],
+    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
+    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
+    //             JOIN banks b ON lt.BankID = b.BankID 
+    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
+    //     data: [
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" }
+    //     ],
+    //     insights: "The total loan given by China Development Bank is $300,000.",
+    //     nextPrompts: [
+    //       "How much loan has India National Bank given to its customers?",
+    //       "Compare Q1 2024 loan approvals with Q1 2023.",
+    //       "Show loan trends for 2024."
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["sales", "top regions"],
+    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data
+    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+    //     data: [
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" }
+    //     ],
+    //     insights: "The North region had the highest sales in 2024.",
+    //     nextPrompts: [
+    //       "What are the sales for Q2 2024?",
+    //       "Compare sales trends between 2023 and 2024.",
+    //       "Show sales trends for 2024."
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["sales", "top regions"],
+    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
+    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+    //     data: [
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" },
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" }
+    //     ],
+    //     insights: "The North region had the highest sales in 2024.",
+    //     nextPrompts: [
+    //       "What are the sales for Q2 2024?",
+    //       "Compare sales trends between 2023 and 2024.",
+    //       "Which product category performed best?"
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["customer", "top revenue"],
+    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
+    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
+    //     data: [
+    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
+    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
+    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
+    //     ],
+    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
+    //     nextPrompts: [
+    //       "Which customer had the highest profit margin?",
+    //       "Compare revenue trends between 2023 and 2024.",
+    //       "Which product had the highest revenue?"
+    //     ]
+    //   }
+    // ];
 
     try {
-      const response = await fetch("http://localhost:8082/optimise_query", {
+      const response = await fetch("http://localhost:8082/generate_query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,9 +204,8 @@ const TechnicalAnalystTab = () => {
       if(!response.ok) {
         throw new Error('API request failed with status ${response.status}')
       }
-
       // Set the state with API response
-      setQuery(apiData.sql_query_generated || apiData.textual_summary[0]);
+      setQuery(apiData.sql_query_generated || "No query generated.");
 
     } catch (error) {
       console.error("Error fetching insights:", error);
@@ -145,18 +213,132 @@ const TechnicalAnalystTab = () => {
     } finally {
       setGenerateLoading(false);
     }
+  
+    // setTimeout(() => {
+    //   let response = {
+    //     query: "No data found for this prompt.",
+    //     data: [],
+    //     insights: "No insights available for this prompt.",
+    //     nextPrompts: []
+    //   };
+  
+    //   // Match the prompt against the keyword-based responses
+    //   for (const item of promptResponses) {
+    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
+    //       response = item;
+    //       break;
+    //     }
+    //   }
+  
+    //   setQuery(response.query);
+    //   setOptimizedQuery(response.query);
+    //   setData(response.data);
+    //   setInsights("");
+    //   setNextPrompts("");
+    //   setGenerateLoading(false);
+    // }, 2000);
   };  
 
   const handleInsightData = async () => {
     setInsightLoading(true);
+    // const promptResponses = [
+    //   {
+    //     keywords: ["loan"],
+    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
+    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
+    //             JOIN banks b ON lt.BankID = b.BankID 
+    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
+
+    //     optimizedQuery: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt
+    //                     JOIN customer c ON lt.CustomerID = c.CustomerID
+    //                     JOIN banks b ON lt.BankID = b.BankID
+    //                     WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
+    //     data: [
+    //       { customerName: "Auto Parts Corp1", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp2", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp3", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp4", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp5", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp6", loanAmount: "$300,000", bank: "China Development Bank" },
+    //       { customerName: "Auto Parts Corp7", loanAmount: "$300,000", bank: "China Development Bank" },
+
+    //     ],
+    //     insights: [ "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
+    //                 "The total loan given by China Development Bank is $300,000",
+    //                 "The total loan given by China Development Bank is $300,000"],
+    //     nextPrompts: [
+    //       "How much loan has India National Bank given to its customers?",
+    //       "Compare Q1 2024 loan approvals with Q1 2023.",
+    //       "Show loan trends for 2024.",
+    //       "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["sales", "top regions"],
+    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
+    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
+    //     data: [
+    //       { region: "North", sales: "$500,000" },
+    //       { region: "South", sales: "$450,000" },
+    //       { region: "East", sales: "$420,000" },
+    //       { region: "West", sales: "$410,000" },
+    //       { region: "Central", sales: "$400,000" }
+    //     ],
+    //     insights: "The North region had the highest sales in 2024.",
+    //     nextPrompts: [
+    //       "What are the sales for Q2 2024?",
+    //       "Compare sales trends between 2023 and 2024.",
+    //       "Which product category performed best?",
+    //       "Give me top 3 customers based on highest revenue?"
+    //     ]
+    //   },
+    //   {
+    //     keywords: ["customer", "highest revenue"],
+    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
+    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
+    //     data: [
+    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
+    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
+    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
+    //     ],
+    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
+    //     nextPrompts: [
+    //       "Which customer had the highest profit margin?",
+    //       "Compare revenue trends between 2023 and 2024.",
+    //       "Which product had the highest revenue?",
+    //       "How much loan did China Development Bank gave to its customers?"
+    //     ]
+    //   }
+    // ];
+    // setTimeout(() => {
+    //   let response = {
+    //     query: "No data found for this prompt.",
+    //     data: [],
+    //     insights: "No insights available for this prompt.",
+    //     nextPrompts: []
+    //   };
+  
+    //   // Match the prompt against the keyword-based responses
+    //   for (const item of promptResponses) {
+    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
+    //       response = item;
+    //       break;
+    //     }
+    //   }
+    //   setData(dataBeforeClick);
+    //   setOptimizedQuery(optimizedQueryBeforeClick);
+    //   setInsights(insightsBeforeClick);
+    //   setNextPrompts(nextPromptsBeforeClick);
+    //   setInsightLoading(false);
+    // }, 2000);
     try {
-      const response = await fetch("http://localhost:8082/generate_insights_from_query", {
+      const response = await fetch("http://localhost:8082/generate_insights", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          query: query, // Sending prompt as 'query'
+          query: prompt, // Sending prompt as 'query'
           llm_type: "openai"
         }),
       });
@@ -168,7 +350,8 @@ const TechnicalAnalystTab = () => {
       const apiData = await response.json();
   
       // Set the state with API response
-      setQuery(apiData.sql_query_generated || "No query generated.");
+      // setQuery(apiData.sql_query_generated || "No query generated.");
+      setOptimizedQuery(apiData.sql_query_optimised || "No query generated.");
       setData(apiData.result || []);
       setInsights(apiData.textual_summary || []);
       setNextPrompts(apiData.followup_prompts || []);
@@ -176,6 +359,7 @@ const TechnicalAnalystTab = () => {
     } catch (error) {
       console.error("Error fetching insights:", error);
       setQuery("Error generating query.");
+      setOptimizedQuery("Error generating query.");
       setData([]);
       setInsights("Fail to generate insights.");
       setNextPrompts([]);
@@ -184,18 +368,34 @@ const TechnicalAnalystTab = () => {
     }
   };
 
-  const handleLinkClick = (text) => {
-      // Populate the TextField with the clicked link
-      setPrompt(text);
-      setTimeout(() => {
-        if (textFieldRef.current) {
-          textFieldRef.current.focus();
-
-          // Select all text in the TextField
-          textFieldRef.current.select();
-        }
-      }, 100);
+  const handleGenerateClick = () => {
+    setGenerateLoading(true);
+    // Simulate an async operation
+    setTimeout(() => {
+      setGenerateLoading(false);
+    }, 2000); // 2 seconds delay
   };
+
+    const handleInsightClick = () => {
+      // setInsightLoading(true);
+      // Simulate an async operation
+      setTimeout(() => {
+        setInsightLoading(true);
+      }, 2000); // 2 seconds delay
+    };
+
+    const handleLinkClick = (text) => {
+        // Populate the TextField with the clicked link
+        setPrompt(text);
+        setTimeout(() => {
+          if (textFieldRef.current) {
+            textFieldRef.current.focus();
+
+            // Select all text in the TextField
+            textFieldRef.current.select();
+          }
+        }, 100);
+    };
 
   // Handle page change
   const handleChangePage = (event, newPage) => {
@@ -219,90 +419,55 @@ const TechnicalAnalystTab = () => {
      <CssBaseline />
       <Box  sx={{ mt: 2, mb: 2, width: '100%', alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={7} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <TextField
-              inputRef={textFieldRef}
-              autoFocus
-              fullWidth
-              label="How can I help you ?"
-              variant="outlined"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              sx={{ backgroundColor: "white", borderRadius: 1 }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <Grid container spacing={2} sx={{ justifyContent: 'center', alignItems: 'center' }}>
-              <Grid item>
-                <FormControl size="small" sx={{ width: '180px' }} disabled>
-                  <InputLabel id="model-select-label">LLM</InputLabel>
-                  <Select
-                    labelId="model-select-label"
-                    id="model-select"
-                    value={selectedModel}
-                    label="AI Model"
-                    onChange={handleChange}
-
-                  >
-                    {models.map((model) => (
-                      <MenuItem key={model.value} value={model.value}>
-                        {model.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item>
-                <FormControl size="small" sx={{ width: '180px' }}>
-                  <InputLabel id="data-category-select-label">Domain</InputLabel>
-                  <Select
-                    labelId="data-category-select-label"
-                    id="data-category-select"
-                    value={selectedDataCategory}
-                    label="Domain"
-                    onChange={handleDataCategoryChange}
-                  >
-                    {dataCategory.map((data) => (
-                      <MenuItem key={data.value} value={data.value}>
-                        {data.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item>
-                <FormControl size="small" sx={{ width: '180px' }}>
-                  <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
-                  <Select
-                    labelId="data-sub-category-select-label"
-                    id="data-sub-category-select"
-                    value={selectedDataSubCategory}
-                    label="Sub-Domain"
-                    onChange={handleDataSubCategoryChange}
-                  >
-                    {dataSubCategory.map((data) => (
-                      <MenuItem key={data.value} value={data.value}>
-                        {data.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+            <Grid item xs={12} sm={9.5}>
+                <TextField
+                    inputRef={textFieldRef}
+                    autoFocus
+                    fullWidth
+                    label="How can I help you ?"
+                    variant="outlined"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                />
             </Grid>
-          </Grid>
-          <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <LoadingButton
-              loading={generateLoading}
-              loadingPosition="start"
-              startIcon={<PlayArrowIcon />}
-              variant="contained"
-              color="primary"
-              onClick={handleFetchData}
-              sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f' } }}
+            <Grid item xs={12} sm={1.5}
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+              }}
             >
-              Optimize
-            </LoadingButton>
-          </Grid>
+              <FormControl fullWidth size="small">
+                <InputLabel id="model-select-label">LLM</InputLabel>
+                <Select
+                  labelId="model-select-label"
+                  id="model-select"
+                  value={selectedModel}
+                  label="AI Model"
+                  onChange={handleChange}
+                  sx={{ mb: 2 }}
+                >
+                  {models.map((model) => (
+                    <MenuItem key={model.value} value={model.value}>
+                      {model.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={1}
+                sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      textAlign: 'center'
+                    }}>
+              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={ handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
+                Generate
+              </LoadingButton>
+            </Grid>
         </Grid>
       </Box>
 
@@ -346,7 +511,7 @@ const TechnicalAnalystTab = () => {
                         gap: 1,
                       }}
                     >
-                      User Input Query
+                      Generated Query
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <IconButton size="small">
@@ -372,18 +537,18 @@ const TechnicalAnalystTab = () => {
                       overflowX: 'auto',
                     }}
                   >
-                    {prompt}
+                    {query}
                   </Box>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                  Get Insights
-                  </LoadingButton>
+                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
+                                                Optimize & Get Insights
+                </LoadingButton>
                 </Box>
           </Grid>
 {/*            { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
-          { query && (
+          { optimizedQuery && insights.length > 0 && (
               <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
                 <Box
                       sx={{
@@ -445,7 +610,7 @@ const TechnicalAnalystTab = () => {
                           overflowX: 'auto',
                         }}
                       >
-                        {query}
+                        {optimizedQuery}
                       </Box>
                     </Box>
               </Grid>
@@ -801,8 +966,9 @@ const TechnicalAnalystTab = () => {
         </DialogActions>
       </Dialog>
 
+
     </Container>
   );
 };
 
-export default TechnicalAnalystTab;
+export default BusinessUserTab;

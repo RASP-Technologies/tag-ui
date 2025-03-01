@@ -24,7 +24,8 @@ import {
   InputLabel, 
   Select, 
   MenuItem,
-  Dialog, DialogTitle, DialogContent, DialogActions
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  RadioGroup, FormControlLabel, Radio, FormLabel
 } from "@mui/material";
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -55,6 +56,8 @@ const BusinessUserTab = () => {
   const textFieldRef = useRef(null);
   //const rowsPerPage = 5; // Number of rows per page
   const [selectedModel, setSelectedModel] = useState('openai');
+  const [selectedDataCategory, setSelectedDataCategory] = useState('Market Data');
+  const [selectedDataSubCategory, setSelectedDataSubCategory] = useState('Payments');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -66,7 +69,8 @@ const BusinessUserTab = () => {
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errorPrompts, setErrorPrompts] = useState([]);
-
+  const [selectedValue, setSelectedValue] = useState('');
+  const [subscription, setSubscription] = useState('');
 
   const models = [
     { value: 'openai', label: 'openai' },
@@ -76,11 +80,35 @@ const BusinessUserTab = () => {
     { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro' }
   ];
 
+  const dataCategory = [
+      { value: 'Market Data', label: 'Market Data' },
+      { value: 'Finance Data', label: 'Finance Data' }
+    ];
+
+  const dataSubCategory = [
+      { value: 'Payments', label: 'Payments' },
+      { value: 'Cyber', label: 'Cyber' },
+      { value: 'Cards', label: 'Cards' },
+      { value: 'Frauds', label: 'Frauds' }
+    ];
+
   const handleChange = (event) => {
     const value = event.target.value;
     setSelectedModel(value);
     onModelSelect(value); // Callback to parent component
   };
+
+    const handleDataCategoryChange = (event) => {
+      const value = event.target.value;
+      setSelectedDataCategory(value);
+      onModelSelect(value); // Callback to parent component
+    };
+
+    const handleDataSubCategoryChange = (event) => {
+      const value = event.target.value;
+      setSelectedDataSubCategory(value);
+      onModelSelect(value); // Callback to parent component
+    };
 
   const handleFetchData = async () => {
     // Reset all data
@@ -412,15 +440,13 @@ const BusinessUserTab = () => {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
   const displayRows = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
-
-
   return (
    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0,  minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
      <CssBaseline />
       <Box  sx={{ mt: 2, mb: 2, width: '100%', alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={9.5}>
-                <TextField
+                <Grid item xs={12} sm={7} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <TextField
                     inputRef={textFieldRef}
                     autoFocus
                     fullWidth
@@ -428,47 +454,75 @@ const BusinessUserTab = () => {
                     variant="outlined"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
-                />
-            </Grid>
-            <Grid item xs={12} sm={1.5}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center'
-              }}
-            >
-              <FormControl fullWidth size="small">
-                <InputLabel id="model-select-label">LLM</InputLabel>
-                <Select
-                  labelId="model-select-label"
-                  id="model-select"
-                  value={selectedModel}
-                  label="AI Model"
-                  onChange={handleChange}
-                  sx={{ mb: 2 }}
-                >
-                  {models.map((model) => (
-                    <MenuItem key={model.value} value={model.value}>
-                      {model.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={1}
-                sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      textAlign: 'center'
-                    }}>
-              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={ handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                Generate
-              </LoadingButton>
-            </Grid>
-        </Grid>
+                    sx={{ backgroundColor: "white",  }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <FormControl size="small" sx={{ m: 2, width: '180px' }} disabled>
+                    <InputLabel id="model-select-label">LLM</InputLabel>
+                    <Select
+                      labelId="model-select-label"
+                      id="model-select"
+                      value={selectedModel}
+                      label="AI Model"
+                      onChange={handleChange}
+                    >
+                      {models.map((model) => (
+                        <MenuItem key={model.value} value={model.value}>
+                          {model.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl size="small" sx={{  width: '180px' }}>
+                    <InputLabel id="data-category-select-label">Domain</InputLabel>
+                    <Select
+                      labelId="data-category-select-label"
+                      id="data-category-select"
+                      value={selectedDataCategory}
+                      label="Domain"
+                      onChange={handleDataCategoryChange}
+                    >
+                      {dataCategory.map((data) => (
+                        <MenuItem key={data.value} value={data.value}>
+                          {data.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl size="small" sx={{ m: 2, width: '180px' }}>
+                    <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
+                    <Select
+                      labelId="data-sub-category-select-label"
+                      id="data-sub-category-select"
+                      value={selectedDataSubCategory}
+                      label="Sub-Domain"
+                      onChange={handleDataSubCategoryChange}
+                    >
+                      {dataSubCategory.map((data) => (
+                        <MenuItem key={data.value} value={data.value}>
+                          {data.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <LoadingButton
+                    loading={generateLoading}
+                    loadingPosition="start"
+                    startIcon={<PlayArrowIcon />}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleFetchData}
+                    sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f' } }}
+                  >
+                    Generate
+                  </LoadingButton>
+                </Grid>
+              </Grid>
       </Box>
 
 
