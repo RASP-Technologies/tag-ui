@@ -23,7 +23,8 @@ import {
   FormControl,
   InputLabel, 
   Select, 
-  MenuItem
+  MenuItem,
+  Dialog, DialogTitle, DialogContent, DialogActions
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import { LoadingButton } from '@mui/lab';
@@ -55,6 +56,9 @@ const TechnicalAnalystTab = () => {
   const [selectedModel, setSelectedModel] = useState('openai');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorPrompts, setErrorPrompts] = useState([]);
   const models = [
     { value: 'openai', label: 'openai' },
     { value: 'palm2', label: 'palm2' },
@@ -91,14 +95,21 @@ const TechnicalAnalystTab = () => {
         }),
       });
 
+      const apiData = await response.json();
+
+      if (response.status === 400) {
+        setErrorMessage(apiData.textual_summary?.[0] || "An error occurred.");
+        setErrorPrompts(apiData.followup_prompts || []);
+        setErrorDialogOpen(true);
+        return;
+      }
+
       if(!response.ok) {
         throw new Error('API request failed with status ${response.status}')
       }
 
-      const apiData = await response.json();
-
       // Set the state with API response
-      setQuery(apiData.sql_query_generated || "No query generated.");
+      setQuery(apiData.sql_query_generated || apiData.textual_summary[0]);
 
     } catch (error) {
       console.error("Error fetching insights:", error);
@@ -703,7 +714,29 @@ const TechnicalAnalystTab = () => {
       </Grid>
 
       )}
-
+      <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
+        <DialogTitle fontWeight="bold">Query Error</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" color="error">{errorMessage}</Typography>
+            {errorPrompts.length > 0 && (
+              <>
+                <Typography variant="h6" sx={{ mt: 2 }}>Sample Analytical Prompts:</Typography>
+                <Box component="ul" sx={{ pl: 2 }}> {/* Ensures bullet points are visible */}
+                  {errorPrompts.map((prompt, index) => (
+                    <Box key={index} sx={{ mb: 1 }}>
+                      <Typography variant="body2">{prompt}</Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </>
+            )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setErrorDialogOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
 
     </Container>
   );
