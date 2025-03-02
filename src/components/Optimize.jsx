@@ -63,6 +63,7 @@ const TechnicalAnalystTab = () => {
     const [subscription, setSubscription] = useState('');
   const [selectedDataCategory, setSelectedDataCategory] = useState('Market Data');
   const [selectedDataSubCategory, setSelectedDataSubCategory] = useState('Payments');
+  const [selectedDatabaseType, setSelectedDatabaseType] = useState('BigQuery');
   const models = [
     { value: 'openai', label: 'openai' },
     { value: 'palm2', label: 'palm2' },
@@ -82,6 +83,17 @@ const TechnicalAnalystTab = () => {
       { value: 'Cards', label: 'Cards' },
       { value: 'Frauds', label: 'Frauds' }
     ];
+
+  const databaseType = [
+      { value: 'BigQuery', label: 'BigQuery' },
+      { value: 'SAS', label: 'SAS' }
+    ];
+
+    const handleDatabaseTypeChange = (event) => {
+      const value = event.target.value;
+      setSelectedDatabaseType(value);
+      onModelSelect(value); // Callback to parent component
+    };
 
   const handleChange = (event) => {
     const value = event.target.value;
@@ -232,9 +244,9 @@ const TechnicalAnalystTab = () => {
             />
           </Grid>
           <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <Grid container spacing={2} sx={{ justifyContent: 'center', alignItems: 'center' }}>
-              <Grid item>
-                <FormControl size="small" sx={{ width: '180px' }} disabled>
+{/*             <Grid container  sx={{ justifyContent: 'center', alignItems: 'center' }}> */}
+{/*               <Grid item> */}
+                <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
                   <InputLabel id="model-select-label">LLM</InputLabel>
                   <Select
                     labelId="model-select-label"
@@ -251,9 +263,9 @@ const TechnicalAnalystTab = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
-              <Grid item>
-                <FormControl size="small" sx={{ width: '180px' }}>
+{/*               </Grid> */}
+{/*               <Grid item> */}
+                <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                   <InputLabel id="data-category-select-label">Domain</InputLabel>
                   <Select
                     labelId="data-category-select-label"
@@ -269,9 +281,9 @@ const TechnicalAnalystTab = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
-              <Grid item>
-                <FormControl size="small" sx={{ width: '180px' }}>
+{/*               </Grid> */}
+{/*               <Grid item> */}
+                <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                   <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
                   <Select
                     labelId="data-sub-category-select-label"
@@ -287,8 +299,26 @@ const TechnicalAnalystTab = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
-            </Grid>
+
+                <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                  <InputLabel id="database-type-select-label">Database</InputLabel>
+                  <Select
+                    labelId="database-type-select-label"
+                    id="database-type-select"
+                    value={selectedDatabaseType}
+                    label="Database-Type"
+                    onChange={handleDatabaseTypeChange}
+                  >
+                    {databaseType.map((data) => (
+                      <MenuItem key={data.value} value={data.value}>
+                        {data.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+{/*               </Grid> */}
+{/*             </Grid> */}
           </Grid>
           <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <LoadingButton

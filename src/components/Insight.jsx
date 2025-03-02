@@ -58,6 +58,7 @@ const BusinessUserTab = () => {
   const [selectedModel, setSelectedModel] = useState('openai');
   const [selectedDataCategory, setSelectedDataCategory] = useState('Market Data');
   const [selectedDataSubCategory, setSelectedDataSubCategory] = useState('Payments');
+  const [selectedDatabaseType, setSelectedDatabaseType] = useState('BigQuery');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -92,6 +93,11 @@ const BusinessUserTab = () => {
       { value: 'Frauds', label: 'Frauds' }
     ];
 
+  const databaseType = [
+      { value: 'BigQuery', label: 'BigQuery' },
+      { value: 'SAS', label: 'SAS' }
+    ];
+
   const handleChange = (event) => {
     const value = event.target.value;
     setSelectedModel(value);
@@ -107,6 +113,12 @@ const BusinessUserTab = () => {
     const handleDataSubCategoryChange = (event) => {
       const value = event.target.value;
       setSelectedDataSubCategory(value);
+      onModelSelect(value); // Callback to parent component
+    };
+
+    const handleDatabaseTypeChange = (event) => {
+      const value = event.target.value;
+      setSelectedDatabaseType(value);
       onModelSelect(value); // Callback to parent component
     };
 
@@ -458,7 +470,7 @@ const BusinessUserTab = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                  <FormControl size="small" sx={{ m: 2, width: '180px' }} disabled>
+                  <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
                     <InputLabel id="model-select-label">LLM</InputLabel>
                     <Select
                       labelId="model-select-label"
@@ -475,7 +487,7 @@ const BusinessUserTab = () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl size="small" sx={{  width: '180px' }}>
+                  <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                     <InputLabel id="data-category-select-label">Domain</InputLabel>
                     <Select
                       labelId="data-category-select-label"
@@ -492,7 +504,7 @@ const BusinessUserTab = () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl size="small" sx={{ m: 2, width: '180px' }}>
+                  <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                     <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
                     <Select
                       labelId="data-sub-category-select-label"
@@ -508,6 +520,24 @@ const BusinessUserTab = () => {
                       ))}
                     </Select>
                   </FormControl>
+
+                    <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                      <InputLabel id="database-type-select-label">Database</InputLabel>
+                      <Select
+                        labelId="database-type-select-label"
+                        id="database-type-select"
+                        value={selectedDatabaseType}
+                        label="Database-Type"
+                        onChange={handleDatabaseTypeChange}
+                      >
+                        {databaseType.map((data) => (
+                          <MenuItem key={data.value} value={data.value}>
+                            {data.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+
                 </Grid>
                 <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
                   <LoadingButton
