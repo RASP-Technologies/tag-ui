@@ -651,7 +651,7 @@ const BusinessUserTab = () => {
       //                                      height: '200px', // Optional: Sets the height of the box
                                          }}
                                      >
-                                <TableContainer  sx={{ border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
+                                <TableContainer  sx={{ border: '1px solid #ccc', borderRadius: '4px', overflow: 'auto' }}>
                                   <Table stickyHeader>
                                     <TableHead sx={{
                                        '& .MuiTableCell-head': {
