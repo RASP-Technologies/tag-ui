@@ -51,6 +51,8 @@ const BusinessUserTab = () => {
   const [insights, setInsights] = useState([]);
   const [inference, setInference] = useState("");
   const [nextPrompts, setNextPrompts] = useState([]);
+    const [optimizeLoading, setOptimizeLoading] = useState(false);
+    const [optimizeTimeout, setOptimizeTimeout] = useState(null);
   const [insightLoading, setInsightLoading] = useState(false);
   const [insightTimeout, setInsightTimeout] = useState(null);
   const textFieldRef = useRef(null);
@@ -72,6 +74,7 @@ const BusinessUserTab = () => {
   const [errorPrompts, setErrorPrompts] = useState([]);
   const [selectedValue, setSelectedValue] = useState('');
   const [subscription, setSubscription] = useState('');
+  const [generatedQuery, setGeneratedQuery] = useState("");
 
   const models = [
     { value: 'openai', label: 'openai' },
@@ -135,90 +138,6 @@ const BusinessUserTab = () => {
 
 
     setGenerateLoading(true);
-  
-    // const promptResponses = [
-    //   {
-    //     keywords: ["loan", "China Development Bank"],
-    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
-    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
-    //             JOIN banks b ON lt.BankID = b.BankID 
-    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
-    //     data: [
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" }
-    //     ],
-    //     insights: "The total loan given by China Development Bank is $300,000.",
-    //     nextPrompts: [
-    //       "How much loan has India National Bank given to its customers?",
-    //       "Compare Q1 2024 loan approvals with Q1 2023.",
-    //       "Show loan trends for 2024."
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["sales", "top regions"],
-    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data
-    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-    //     data: [
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" }
-    //     ],
-    //     insights: "The North region had the highest sales in 2024.",
-    //     nextPrompts: [
-    //       "What are the sales for Q2 2024?",
-    //       "Compare sales trends between 2023 and 2024.",
-    //       "Show sales trends for 2024."
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["sales", "top regions"],
-    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
-    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-    //     data: [
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" },
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" }
-    //     ],
-    //     insights: "The North region had the highest sales in 2024.",
-    //     nextPrompts: [
-    //       "What are the sales for Q2 2024?",
-    //       "Compare sales trends between 2023 and 2024.",
-    //       "Which product category performed best?"
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["customer", "top revenue"],
-    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
-    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
-    //     data: [
-    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
-    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
-    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
-    //     ],
-    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
-    //     nextPrompts: [
-    //       "Which customer had the highest profit margin?",
-    //       "Compare revenue trends between 2023 and 2024.",
-    //       "Which product had the highest revenue?"
-    //     ]
-    //   }
-    // ];
 
     try {
       const response = await fetch("http://localhost:8082/generate_query", {
@@ -253,124 +172,49 @@ const BusinessUserTab = () => {
     } finally {
       setGenerateLoading(false);
     }
-  
-    // setTimeout(() => {
-    //   let response = {
-    //     query: "No data found for this prompt.",
-    //     data: [],
-    //     insights: "No insights available for this prompt.",
-    //     nextPrompts: []
-    //   };
-  
-    //   // Match the prompt against the keyword-based responses
-    //   for (const item of promptResponses) {
-    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
-    //       response = item;
-    //       break;
-    //     }
-    //   }
-  
-    //   setQuery(response.query);
-    //   setOptimizedQuery(response.query);
-    //   setData(response.data);
-    //   setInsights("");
-    //   setNextPrompts("");
-    //   setGenerateLoading(false);
-    // }, 2000);
-  };  
+  };
+
+    const handleOptimizeData = async () => {
+      setOptimizeLoading(true);
+      try {
+        const response = await fetch("http://localhost:8082/optimise_query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: query, // Sending prompt as 'query'
+            llm_type: "openai"
+          }),
+        });
+
+        if(!response.ok) {
+          throw new Error('API request failed with status ${response.status}')
+        }
+
+        const apiData = await response.json();
+
+        // Set the state with API response
+        // setQuery(apiData.sql_query_generated || "No query generated.");
+        setOptimizedQuery(apiData.sql_query_generated || "No query generated.");
+//         setData(apiData.result || []);
+//         setInsights(apiData.textual_summary || []);
+//         setNextPrompts(apiData.followup_prompts || []);
+
+      } catch (error) {
+        console.error("Error fetching insights:", error);
+        setQuery("Error generating query.");
+        setOptimizedQuery("Error generating query.");
+//         setData([]);
+//         setInsights("Fail to generate insights.");
+//         setNextPrompts([]);
+      } finally {
+        setOptimizeLoading(false);
+      }
+    };
 
   const handleInsightData = async () => {
     setInsightLoading(true);
-    // const promptResponses = [
-    //   {
-    //     keywords: ["loan"],
-    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
-    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
-    //             JOIN banks b ON lt.BankID = b.BankID 
-    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
-
-    //     optimizedQuery: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt
-    //                     JOIN customer c ON lt.CustomerID = c.CustomerID
-    //                     JOIN banks b ON lt.BankID = b.BankID
-    //                     WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
-    //     data: [
-    //       { customerName: "Auto Parts Corp1", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp2", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp3", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp4", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp5", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp6", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp7", loanAmount: "$300,000", bank: "China Development Bank" },
-
-    //     ],
-    //     insights: [ "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
-    //                 "The total loan given by China Development Bank is $300,000",
-    //                 "The total loan given by China Development Bank is $300,000"],
-    //     nextPrompts: [
-    //       "How much loan has India National Bank given to its customers?",
-    //       "Compare Q1 2024 loan approvals with Q1 2023.",
-    //       "Show loan trends for 2024.",
-    //       "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["sales", "top regions"],
-    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
-    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-    //     data: [
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" }
-    //     ],
-    //     insights: "The North region had the highest sales in 2024.",
-    //     nextPrompts: [
-    //       "What are the sales for Q2 2024?",
-    //       "Compare sales trends between 2023 and 2024.",
-    //       "Which product category performed best?",
-    //       "Give me top 3 customers based on highest revenue?"
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["customer", "highest revenue"],
-    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
-    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
-    //     data: [
-    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
-    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
-    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
-    //     ],
-    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
-    //     nextPrompts: [
-    //       "Which customer had the highest profit margin?",
-    //       "Compare revenue trends between 2023 and 2024.",
-    //       "Which product had the highest revenue?",
-    //       "How much loan did China Development Bank gave to its customers?"
-    //     ]
-    //   }
-    // ];
-    // setTimeout(() => {
-    //   let response = {
-    //     query: "No data found for this prompt.",
-    //     data: [],
-    //     insights: "No insights available for this prompt.",
-    //     nextPrompts: []
-    //   };
-  
-    //   // Match the prompt against the keyword-based responses
-    //   for (const item of promptResponses) {
-    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
-    //       response = item;
-    //       break;
-    //     }
-    //   }
-    //   setData(dataBeforeClick);
-    //   setOptimizedQuery(optimizedQueryBeforeClick);
-    //   setInsights(insightsBeforeClick);
-    //   setNextPrompts(nextPromptsBeforeClick);
-    //   setInsightLoading(false);
-    // }, 2000);
     try {
       const response = await fetch("http://localhost:8082/generate_insights", {
         method: "POST",
@@ -391,7 +235,7 @@ const BusinessUserTab = () => {
   
       // Set the state with API response
       // setQuery(apiData.sql_query_generated || "No query generated.");
-      setOptimizedQuery(apiData.sql_query_optimised || "No query generated.");
+//       setOptimizedQuery(apiData.sql_query_optimised || "No query generated.");
       setData(apiData.result || []);
       setInsights(apiData.textual_summary || []);
       setNextPrompts(apiData.followup_prompts || []);
@@ -399,7 +243,7 @@ const BusinessUserTab = () => {
     } catch (error) {
       console.error("Error fetching insights:", error);
       setQuery("Error generating query.");
-      setOptimizedQuery("Error generating query.");
+//       setOptimizedQuery("Error generating query.");
       setData([]);
       setInsights("Fail to generate insights.");
       setNextPrompts([]);
@@ -436,6 +280,10 @@ const BusinessUserTab = () => {
           }
         }, 100);
     };
+
+  const handleTextChange = (e) => {
+    setTextContent(e.target.value);
+  };
 
   // Handle page change
   const handleChangePage = (event, newPage) => {
@@ -564,7 +412,7 @@ const BusinessUserTab = () => {
             <Box
                   sx={{
                     width: '100%',
-                    mb: 2,
+
                     borderRadius: 1,
                     overflow: 'hidden',
                     boxShadow: 1,
@@ -621,18 +469,35 @@ const BusinessUserTab = () => {
                       overflowX: 'auto',
                     }}
                   >
-                    {query}
+                  <TextField
+                      fullWidth
+                      multiline
+                      label="Editable Text"
+                      variant="outlined"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                      InputProps={{
+                        style: {
+                          fontFamily: 'monospace',
+                          fontWeight: 'bold',
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+{/*                     {query} */}
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                Optimize & Get Insights
+                <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
+                <LoadingButton loading={optimizeLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleOptimizeData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
+                                                Optimize
                 </LoadingButton>
                 </Box>
           </Grid>
-{/*            { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
-          { optimizedQuery && insights.length > 0 && (
+
+{/*           { optimizedQuery && insights.length > 0 && ( */}
+            { optimizedQuery && (
               <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
                 <Box
                       sx={{
@@ -694,21 +559,35 @@ const BusinessUserTab = () => {
                           overflowX: 'auto',
                         }}
                       >
-                        {optimizedQuery}
+                      <TextField
+                        fullWidth
+                        multiline
+                        label="Editable Text"
+                        variant="outlined"
+                        value={optimizedQuery}
+                        onChange={(e) => setOptimizedQuery(e.target.value)}
+                        sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                        InputProps={{
+                          style: {
+                            fontFamily: 'monospace',
+                            fontWeight: 'bold',
+                            fontSize: '0.875rem',
+                          },
+                        }}
+                      />
+{/*                         {optimizedQuery} */}
                       </Box>
+                    </Box>
+                    <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
+                                                    Get Insights
+                    </LoadingButton>
                     </Box>
               </Grid>
           )}
       </Grid>
 
       )}
-
-{/*       {query && ( */}
-
-
-{/*    )} */}
-
-{/*      { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
     {  insights.length > 0 && (
 

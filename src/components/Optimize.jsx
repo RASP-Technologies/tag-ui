@@ -244,8 +244,6 @@ const TechnicalAnalystTab = () => {
             />
           </Grid>
           <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-{/*             <Grid container  sx={{ justifyContent: 'center', alignItems: 'center' }}> */}
-{/*               <Grid item> */}
                 <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
                   <InputLabel id="model-select-label">LLM</InputLabel>
                   <Select
@@ -263,8 +261,6 @@ const TechnicalAnalystTab = () => {
                     ))}
                   </Select>
                 </FormControl>
-{/*               </Grid> */}
-{/*               <Grid item> */}
                 <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                   <InputLabel id="data-category-select-label">Domain</InputLabel>
                   <Select
@@ -281,8 +277,6 @@ const TechnicalAnalystTab = () => {
                     ))}
                   </Select>
                 </FormControl>
-{/*               </Grid> */}
-{/*               <Grid item> */}
                 <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                   <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
                   <Select
@@ -316,9 +310,6 @@ const TechnicalAnalystTab = () => {
                     ))}
                   </Select>
                 </FormControl>
-
-{/*               </Grid> */}
-{/*             </Grid> */}
           </Grid>
           <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <LoadingButton
@@ -405,11 +396,7 @@ const TechnicalAnalystTab = () => {
                     {prompt}
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                  Get Insights
-                  </LoadingButton>
-                </Box>
+
           </Grid>
 {/*            { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
@@ -465,6 +452,7 @@ const TechnicalAnalystTab = () => {
                       <Box
                         sx={{
                           p: 2,
+
                           //backgroundColor: (theme) => theme.palette.primary.dark, // Dark blue background
                           backgroundColor: '#defaec',
                           color: 'black',
@@ -475,8 +463,29 @@ const TechnicalAnalystTab = () => {
                           overflowX: 'auto',
                         }}
                       >
-                        {query}
+                        <TextField
+                          fullWidth
+                          multiline
+                          label="Editable Text"
+                          variant="outlined"
+                          value={query}
+                          onChange={(e) => setQuery(e.target.value)}
+                          sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                          InputProps={{
+                            style: {
+                              fontFamily: 'monospace',
+                              fontWeight: 'bold',
+                              fontSize: '0.875rem',
+                            },
+                          }}
+                        />
+{/*                         {query} */}
                       </Box>
+                    </Box>
+                    <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
+                      <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{  alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
+                                                      Get Insights
+                      </LoadingButton>
                     </Box>
               </Grid>
           )}
