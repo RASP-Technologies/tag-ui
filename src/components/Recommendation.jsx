@@ -94,6 +94,8 @@ const Recommendation = () => {
       category: 'Code_Refactoring',
       recommendation: 'Use Truncate to Delete all records from Table',
       files: 'EMPLOYEES_DATA_BACKUP.sql',
+      improvementCategory: 'Performance-Optimization',
+      lastUsed: '1 day ago',
       queryChange: 'Yes',
       appChange: 'No',
       schemaChange: 'No',
@@ -104,6 +106,8 @@ const Recommendation = () => {
       category: 'Code_Refactoring',
       recommendation: 'Use Single Update  wherever  multiple update statements are used on single tables',
       files: 'UpdateSalaries.sql, UpdateSalariesInEmployeesUpdatesTable.sql, Update_test.sql',
+      improvementCategory: 'Performance-Optimization',
+      lastUsed: '1 day ago',
       queryChange: 'Yes',
       appChange: 'Yes',
       schemaChange: 'No',
@@ -147,6 +151,8 @@ const Recommendation = () => {
       category: 'Code_Refactoring',
       recommendation: 'Use Merge Statement where Delete/Insert/Update used separately',
       files: 'Incremetal_Load_Employees_BKP_SLOW.sql, test.sql',
+      improvementCategory: 'Performance-Optimization',
+      lastUsed: '2 day ago',
       queryChange: 'No',
       appChange: 'No',
       schemaChange: 'No',
@@ -155,8 +161,10 @@ const Recommendation = () => {
     },
     {
       category: 'Data_Model',
-      recommendation: 'Remove Or Purge Duplicate Schema',
-      files: '',
+      recommendation: 'Remove Or Purge Duplicate Data to reduce Storage Cost',
+      files: 'cm_event_assignee_backup',
+      improvementCategory: 'Cost-Optimization',
+      lastUsed: '9 Months ago',
       queryChange: 'No',
       appChange: 'No',
       schemaChange: 'No',
@@ -165,8 +173,10 @@ const Recommendation = () => {
     },
     {
       category: 'Data_Model',
-      recommendation: 'Stored in GCS Bucket and use External Tables',
-      files: '',
+      recommendation: 'The 50 GB table can be strategically transitioned from hot to warm storage, with archival to cold storage for long-term, cost-optimized retention.',
+      files: 'cm_event_history',
+      improvementCategory: 'Cost-Optimization',
+      lastUsed: '6 Months ago',
       queryChange: 'No',
       appChange: 'No',
       schemaChange: 'No',
@@ -518,9 +528,11 @@ const Recommendation = () => {
                                        },
                                      }}>
                                       <TableRow>
-                                        <TableCell align="left" style={{ fontWeight: 'bold' }}>Category</TableCell>
-                                        <TableCell align="left" style={{ fontWeight: 'bold' }}>Recommendation</TableCell>
-                                        <TableCell align="left" style={{ fontWeight: 'bold' }}>Files/Queries</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Category</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Recommendation</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Files/Queries</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Optimization Category</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Last Used</TableCell>
                                         <TableCell align="center" style={{ fontWeight: 'bold' }}>Query Change Required</TableCell>
                                         <TableCell align="center" style={{ fontWeight: 'bold' }}>Application Code Change Required</TableCell>
                                         <TableCell align="center" style={{ fontWeight: 'bold' }}>Schema Change Required</TableCell>
@@ -530,10 +542,17 @@ const Recommendation = () => {
 
                                     <TableBody sx={{  overflowY: 'auto' }} >
                                         {displayRows.map((rec, index) => (
-                                            <TableRow key={index}>
-                                              <TableCell align="left">{rec.category}</TableCell>
-                                              <TableCell align="left">{rec.recommendation}</TableCell>
-                                              <TableCell align="left">{rec.files}</TableCell>
+                                            <TableRow key={index}
+                                            sx={{
+                                                        '& .MuiTableCell-root': {
+                                                          color: rec.improvementCategory === 'Cost-Optimization' ? 'green' : 'blue',
+                                                        },
+                                                    }}>
+                                              <TableCell align="center">{rec.category}</TableCell>
+                                              <TableCell align="center">{rec.recommendation}</TableCell>
+                                              <TableCell align="center">{rec.files}</TableCell>
+                                              <TableCell align="center">{rec.improvementCategory}</TableCell>
+                                              <TableCell align="center">{rec.lastUsed}</TableCell>
                                               <TableCell align="center">{rec.queryChange}</TableCell>
                                               <TableCell align="center">{rec.appChange}</TableCell>
                                               <TableCell align="center">{rec.schemaChange}</TableCell>
