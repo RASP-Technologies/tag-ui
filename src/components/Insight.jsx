@@ -174,55 +174,56 @@ const BusinessUserTab = () => {
     }
   };
 
-    const handleOptimizeData = async () => {
-      setOptimizeLoading(true);
-      try {
-        const response = await fetch("http://localhost:8082/optimise_query", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            query: query, // Sending prompt as 'query'
-            llm_type: "openai"
-          }),
-        });
+  const handleOptimizeData = async () => {
+    setOptimizeLoading(true);
+    try {
+      const response = await fetch("http://localhost:8082/optimise_query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: query, // Sending prompt as 'query'
+          llm_type: "openai"
+        }),
+      });
 
-        if(!response.ok) {
-          throw new Error('API request failed with status ${response.status}')
-        }
+      if(!response.ok) {
+        throw new Error('API request failed with status ${response.status}')
+      }
 
-        const apiData = await response.json();
+      const apiData = await response.json();
 
-        // Set the state with API response
-        // setQuery(apiData.sql_query_generated || "No query generated.");
-        setOptimizedQuery(apiData.sql_query_generated || "No query generated.");
+      // Set the state with API response
+      // setQuery(apiData.sql_query_generated || "No query generated.");
+      setOptimizedQuery(apiData.sql_query_generated || "No query generated.");
 //         setData(apiData.result || []);
 //         setInsights(apiData.textual_summary || []);
 //         setNextPrompts(apiData.followup_prompts || []);
 
-      } catch (error) {
-        console.error("Error fetching insights:", error);
-        setQuery("Error generating query.");
-        setOptimizedQuery("Error generating query.");
+    } catch (error) {
+      console.error("Error fetching insights:", error);
+      setQuery("Error generating query.");
+      setOptimizedQuery("Error generating query.");
 //         setData([]);
 //         setInsights("Fail to generate insights.");
 //         setNextPrompts([]);
-      } finally {
-        setOptimizeLoading(false);
-      }
-    };
+    } finally {
+      setOptimizeLoading(false);
+    }
+  };
 
   const handleInsightData = async () => {
     setInsightLoading(true);
     try {
-      const response = await fetch("http://localhost:8082/generate_insights", {
+      const response = await fetch("http://localhost:8082/generate_insights_from_nl_query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           query: prompt, // Sending prompt as 'query'
+          bq_query: optimizedQuery,
           llm_type: "openai"
         }),
       });
@@ -260,26 +261,26 @@ const BusinessUserTab = () => {
     }, 2000); // 2 seconds delay
   };
 
-    const handleInsightClick = () => {
-      // setInsightLoading(true);
-      // Simulate an async operation
+  const handleInsightClick = () => {
+    // setInsightLoading(true);
+    // Simulate an async operation
+    setTimeout(() => {
+      setInsightLoading(true);
+    }, 2000); // 2 seconds delay
+  };
+
+  const handleLinkClick = (text) => {
+      // Populate the TextField with the clicked link
+      setPrompt(text);
       setTimeout(() => {
-        setInsightLoading(true);
-      }, 2000); // 2 seconds delay
-    };
+        if (textFieldRef.current) {
+          textFieldRef.current.focus();
 
-    const handleLinkClick = (text) => {
-        // Populate the TextField with the clicked link
-        setPrompt(text);
-        setTimeout(() => {
-          if (textFieldRef.current) {
-            textFieldRef.current.focus();
-
-            // Select all text in the TextField
-            textFieldRef.current.select();
-          }
-        }, 100);
-    };
+          // Select all text in the TextField
+          textFieldRef.current.select();
+        }
+      }, 100);
+  };
 
   const handleTextChange = (e) => {
     setTextContent(e.target.value);
