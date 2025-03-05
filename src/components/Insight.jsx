@@ -236,7 +236,7 @@ const BusinessUserTab = () => {
   
       // Set the state with API response
       // setQuery(apiData.sql_query_generated || "No query generated.");
-//       setOptimizedQuery(apiData.sql_query_optimised || "No query generated.");
+      setOptimizedQuery(apiData.sql_query_optimised || "No query generated.");
       setData(apiData.result || []);
       setInsights(apiData.textual_summary || []);
       setNextPrompts(apiData.followup_prompts || []);
