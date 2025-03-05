@@ -116,60 +116,102 @@ const Recommendation = () => {
     },
 {
       category: 'Code_Refactoring',
-      recommendation: 'Use Truncate to Delete all records from Table',
-      files: 'EMPLOYEES_DATA_BACKUP.sql',
+      recommendation: 'Repeated subqueries, no aggregation optimization',
+      files: 'FraudDetection.sql',
       improvementCategory: 'Performance-Optimization',
       lastUsed: '1 day ago',
       queryChange: 'Yes',
       appChange: 'No',
       schemaChange: 'No',
-      previousQuery: 'DELETE * FROM EMPLOYEES_DATA_BACKUP',
-      optimizedQuery: 'TRUNCATE TABLE EMPLOYEES_DATA_BACKUP',
+      previousQuery: `
+      SELECT
+            customer_portfolio_channel,
+            COUNT(*) AS total_transactions,
+            SUM(CASE WHEN outcome_fraud = TRUE THEN 1 ELSE 0 END) AS fraud_transactions,
+            (SELECT COUNT(*)
+             FROM cm_event_arrival
+             WHERE id.payload.schema.customer_portfolio_channel = e.customer_portfolio_channel
+             AND alert = TRUE) AS total_alerts,
+            (SUM(CASE WHEN outcome_fraud = TRUE THEN sender_transaction_amount ELSE 0 END) /
+             NULLIF(COUNT(*), 0)) AS avg_fraud_amount
+        FROM event_store e
+        GROUP BY customer_portfolio_channel
+        ORDER BY fraud_transactions DESC;`,
+      optimizedQuery: `WITH ChannelMetrics AS (
+                           SELECT
+                               e.customer_portfolio_channel,
+                               COUNT(*) AS total_transactions,
+                               COUNTIF(e.outcome_fraud) AS fraud_transactions,
+                               SUM(CASE WHEN e.outcome_fraud THEN e.sender_transaction_amount ELSE 0 END) AS total_fraud_amount,
+                               COUNT(DISTINCT CASE WHEN a.alert = TRUE THEN a.id.identifier END) AS total_alerts
+                           FROM event_store e
+                           LEFT JOIN cm_event_arrival a ON e.lifecycle_id = a.id.identifier
+                           GROUP BY e.customer_portfolio_channel
+                       )
+                       SELECT
+                           customer_portfolio_channel,
+                           total_transactions,
+                           fraud_transactions,
+                           total_alerts,
+                           SAFE_DIVIDE(total_fraud_amount, total_transactions) AS avg_fraud_amount,
+                           SAFE_DIVIDE(fraud_transactions, total_transactions) * 100 AS fraud_rate
+                       FROM ChannelMetrics
+                       ORDER BY fraud_transactions DESC;
+`,
     },
     {
       category: 'Code_Refactoring',
-      recommendation: 'Use Single Update  wherever  multiple update statements are used on single tables',
-      files: 'UpdateSalaries.sql, UpdateSalariesInEmployeesUpdatesTable.sql, Update_test.sql',
+      recommendation: 'Full table scan, no indexing, suboptimal joins',
+      files: 'RiskAnalysis.sql',
       improvementCategory: 'Performance-Optimization',
       lastUsed: '1 day ago',
       queryChange: 'Yes',
       appChange: 'Yes',
       schemaChange: 'No',
-      previousQuery: `BEGIN
-                      DECLARE LN_COUNT INT64;
-                      DECLARE LV_FLAG STRING;
-                        SET LN_COUNT = (SELECT COUNT(*) FROM coe.EMPLOYEES);
-                        IF LN_COUNT >0
-                        THEN
-                            UPDATE coe.EMPLOYEES
-                            SET Salary = Salary+Salary*50/100
-                            WHERE Salary BETWEEN 5000 AND 10000;
-
-                            UPDATE coe.EMPLOYEES
-                            SET Salary = Salary+Salary*40/100
-                            WHERE Salary BETWEEN 10001 AND 20000;
-
-                            UPDATE coe.EMPLOYEES
-                            SET Salary = Salary+Salary*30/100
-                            WHERE Salary BETWEEN 20001 AND 30000;
-
-                            UPDATE coe.EMPLOYEES
-                            SET Salary = Salary+Salary*10/100
-                            WHERE Salary > 30000;
-                          END IF;
-                      END;
+      previousQuery: `SELECT
+                          e.lifecycle_id,
+                          e.customer_id,
+                          e.sender_transaction_amount,
+                          e.event_type,
+                          s.username AS confirmed_by,
+                          (SELECT AVG(sender_transaction_amount)
+                           FROM event_store
+                           WHERE customer_portfolio_type = e.customer_portfolio_type) AS avg_portfolio_amount
+                      FROM event_store e
+                      LEFT JOIN cm_event_state_updates s ON e.lifecycle_id = s.ids[OFFSET(0)].identifier
+                      WHERE e.outcome_fraud = TRUE
+                          AND e.sender_transaction_amount > (
+                              SELECT AVG(sender_transaction_amount) * 1.5
+                              FROM event_store
+                              WHERE customer_portfolio_type = e.customer_portfolio_type
+                          )
+                      ORDER BY e.sender_transaction_amount DESC
+                      LIMIT 100;
 `,
-      optimizedQuery: `BEGIN
-                         UPDATE coe.EMPLOYEES
-                         SET Salary = CASE
-                           WHEN Salary BETWEEN 5000 AND 10000 THEN Salary + Salary * 50 / 100
-                           WHEN Salary BETWEEN 10001 AND 20000 THEN Salary + Salary * 40 / 100
-                           WHEN Salary BETWEEN 20001 AND 30000 THEN Salary + Salary * 30 / 100
-                           WHEN Salary > 30000 THEN Salary + Salary * 10 / 100
-                           ELSE Salary
-                         END
-                         WHERE Salary >= 5000;
-                       END;`,
+      optimizedQuery: `
+      WITH PortfolioStats AS (
+                                 SELECT
+                                     customer_portfolio_type,
+                                     AVG(sender_transaction_amount) AS avg_amount,
+                                     STDDEV(sender_transaction_amount) AS stddev_amount
+                                 FROM event_store
+                                 WHERE outcome_fraud = TRUE
+                                 GROUP BY customer_portfolio_type
+                             )
+                             SELECT
+                                 e.lifecycle_id,
+                                 e.customer_id,
+                                 e.sender_transaction_amount,
+                                 e.event_type,
+                                 s.username AS confirmed_by,
+                                 ps.avg_amount AS portfolio_avg_amount
+                             FROM event_store e
+                             JOIN PortfolioStats ps ON e.customer_portfolio_type = ps.customer_portfolio_type
+                             LEFT JOIN cm_event_state_updates s ON e.lifecycle_id = s.ids[OFFSET(0)].identifier
+                             WHERE e.outcome_fraud = TRUE
+                                 AND e.sender_transaction_amount > (ps.avg_amount + 1.5 * ps.stddev_amount)
+                             ORDER BY e.sender_transaction_amount DESC
+                             LIMIT 100;`
     },
     {
       category: 'Code_Refactoring',
