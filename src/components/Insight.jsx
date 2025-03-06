@@ -175,6 +175,14 @@ const BusinessUserTab = () => {
   };
 
   const handleOptimizeData = async () => {
+      setQuery("");
+      setOptimizedQuery("");
+      setData([]);
+      setDataBeforeClick([]);
+      setInsights([]);
+      setInsightsBeforeClick([]);
+      setNextPrompts([]);
+      setNextPromptsBeforeClick([]);
 //     setOptimizeLoading(true);
     setGenerateLoading(true);
     try {
