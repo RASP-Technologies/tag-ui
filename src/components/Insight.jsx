@@ -175,7 +175,8 @@ const BusinessUserTab = () => {
   };
 
   const handleOptimizeData = async () => {
-    setOptimizeLoading(true);
+//     setOptimizeLoading(true);
+    setGenerateLoading(true);
     try {
       const response = await fetch("http://localhost:8082/optimise_query", {
         method: "POST",
@@ -209,7 +210,8 @@ const BusinessUserTab = () => {
 //         setInsights("Fail to generate insights.");
 //         setNextPrompts([]);
     } finally {
-      setOptimizeLoading(false);
+        setGenerateLoading(false);
+//       setOptimizeLoading(false);
     }
   };
 
@@ -304,7 +306,7 @@ const BusinessUserTab = () => {
   return (
    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0,  minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
      <CssBaseline />
-      <Box  sx={{ mt: 2, mb: 2, width: '100%', alignItems: 'center' }}>
+      <Box  sx={{ mt: 2, mb: 0, width: '100%', alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
                 <Grid item xs={12} sm={7} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
                   <TextField
@@ -404,8 +406,9 @@ const BusinessUserTab = () => {
               </Grid>
       </Box>
 
+
 {/*       {query && ( */}
-        <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc'}}>
+{/*         <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc'}}> */}
 {/*           <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}> */}
 {/*             <Box */}
 {/*                   sx={{ */}
@@ -491,11 +494,12 @@ const BusinessUserTab = () => {
 {/*           </Grid> */}
 
             { optimizedQuery && (
-              <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
+         <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc'}}>
+              <Grid item xs={12} sm={11.8} sx={{ alignSelf: 'flex-start'}}>
                 <Box
                       sx={{
                         width: '100%',
-                        maxWidth: '900px',
+
                         borderRadius: 1,
                         overflow: 'hidden',
                         boxShadow: 1,
@@ -574,8 +578,9 @@ const BusinessUserTab = () => {
                     </LoadingButton>
                     </Box>
               </Grid>
+            </Grid>
           )}
-      </Grid>
+
 
 {/*       )} */}
 
