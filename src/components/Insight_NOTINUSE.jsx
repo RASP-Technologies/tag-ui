@@ -24,7 +24,8 @@ import {
   InputLabel, 
   Select, 
   MenuItem,
-  Dialog, DialogTitle, DialogContent, DialogActions
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  RadioGroup, FormControlLabel, Radio, FormLabel
 } from "@mui/material";
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -50,11 +51,16 @@ const BusinessUserTab = () => {
   const [insights, setInsights] = useState([]);
   const [inference, setInference] = useState("");
   const [nextPrompts, setNextPrompts] = useState([]);
+    const [optimizeLoading, setOptimizeLoading] = useState(false);
+    const [optimizeTimeout, setOptimizeTimeout] = useState(null);
   const [insightLoading, setInsightLoading] = useState(false);
   const [insightTimeout, setInsightTimeout] = useState(null);
   const textFieldRef = useRef(null);
   //const rowsPerPage = 5; // Number of rows per page
   const [selectedModel, setSelectedModel] = useState('openai');
+  const [selectedDataCategory, setSelectedDataCategory] = useState('Market Data');
+  const [selectedDataSubCategory, setSelectedDataSubCategory] = useState('Payments');
+  const [selectedDatabaseType, setSelectedDatabaseType] = useState('BigQuery');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -66,7 +72,9 @@ const BusinessUserTab = () => {
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errorPrompts, setErrorPrompts] = useState([]);
-
+  const [selectedValue, setSelectedValue] = useState('');
+  const [subscription, setSubscription] = useState('');
+  const [generatedQuery, setGeneratedQuery] = useState("");
 
   const models = [
     { value: 'openai', label: 'openai' },
@@ -76,11 +84,46 @@ const BusinessUserTab = () => {
     { value: 'gemini-1.5-pro', label: 'gemini-1.5-pro' }
   ];
 
+  const dataCategory = [
+      { value: 'Market Data', label: 'Market Data' },
+      { value: 'Finance Data', label: 'Finance Data' }
+    ];
+
+  const dataSubCategory = [
+      { value: 'Payments', label: 'Payments' },
+      { value: 'Cyber', label: 'Cyber' },
+      { value: 'Cards', label: 'Cards' },
+      { value: 'Frauds', label: 'Frauds' }
+    ];
+
+  const databaseType = [
+      { value: 'BigQuery', label: 'BigQuery' },
+      { value: 'SAS', label: 'SAS' }
+    ];
+
   const handleChange = (event) => {
     const value = event.target.value;
     setSelectedModel(value);
     onModelSelect(value); // Callback to parent component
   };
+
+    const handleDataCategoryChange = (event) => {
+      const value = event.target.value;
+      setSelectedDataCategory(value);
+      onModelSelect(value); // Callback to parent component
+    };
+
+    const handleDataSubCategoryChange = (event) => {
+      const value = event.target.value;
+      setSelectedDataSubCategory(value);
+      onModelSelect(value); // Callback to parent component
+    };
+
+    const handleDatabaseTypeChange = (event) => {
+      const value = event.target.value;
+      setSelectedDatabaseType(value);
+      onModelSelect(value); // Callback to parent component
+    };
 
   const handleFetchData = async () => {
     // Reset all data
@@ -95,90 +138,6 @@ const BusinessUserTab = () => {
 
 
     setGenerateLoading(true);
-  
-    // const promptResponses = [
-    //   {
-    //     keywords: ["loan", "China Development Bank"],
-    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
-    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
-    //             JOIN banks b ON lt.BankID = b.BankID 
-    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank'`,
-    //     data: [
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp", loanAmount: "$300,000", bank: "China Development Bank" }
-    //     ],
-    //     insights: "The total loan given by China Development Bank is $300,000.",
-    //     nextPrompts: [
-    //       "How much loan has India National Bank given to its customers?",
-    //       "Compare Q1 2024 loan approvals with Q1 2023.",
-    //       "Show loan trends for 2024."
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["sales", "top regions"],
-    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data
-    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-    //     data: [
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" }
-    //     ],
-    //     insights: "The North region had the highest sales in 2024.",
-    //     nextPrompts: [
-    //       "What are the sales for Q2 2024?",
-    //       "Compare sales trends between 2023 and 2024.",
-    //       "Show sales trends for 2024."
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["sales", "top regions"],
-    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
-    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-    //     data: [
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" },
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" }
-    //     ],
-    //     insights: "The North region had the highest sales in 2024.",
-    //     nextPrompts: [
-    //       "What are the sales for Q2 2024?",
-    //       "Compare sales trends between 2023 and 2024.",
-    //       "Which product category performed best?"
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["customer", "top revenue"],
-    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
-    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
-    //     data: [
-    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
-    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
-    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
-    //     ],
-    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
-    //     nextPrompts: [
-    //       "Which customer had the highest profit margin?",
-    //       "Compare revenue trends between 2023 and 2024.",
-    //       "Which product had the highest revenue?"
-    //     ]
-    //   }
-    // ];
 
     try {
       const response = await fetch("http://localhost:8082/generate_query", {
@@ -213,153 +172,79 @@ const BusinessUserTab = () => {
     } finally {
       setGenerateLoading(false);
     }
-  
-    // setTimeout(() => {
-    //   let response = {
-    //     query: "No data found for this prompt.",
-    //     data: [],
-    //     insights: "No insights available for this prompt.",
-    //     nextPrompts: []
-    //   };
-  
-    //   // Match the prompt against the keyword-based responses
-    //   for (const item of promptResponses) {
-    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
-    //       response = item;
-    //       break;
-    //     }
-    //   }
-  
-    //   setQuery(response.query);
-    //   setOptimizedQuery(response.query);
-    //   setData(response.data);
-    //   setInsights("");
-    //   setNextPrompts("");
-    //   setGenerateLoading(false);
-    // }, 2000);
-  };  
+  };
+
+  const handleOptimizeData = async () => {
+    setOptimizeLoading(true);
+    try {
+      const response = await fetch("http://localhost:8082/optimise_query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: query, // Sending prompt as 'query'
+          llm_type: "openai"
+        }),
+      });
+
+      if(!response.ok) {
+        throw new Error('API request failed with status ${response.status}')
+      }
+
+      const apiData = await response.json();
+
+      // Set the state with API response
+      // setQuery(apiData.sql_query_generated || "No query generated.");
+      setOptimizedQuery(apiData.sql_query_generated || "No query generated.");
+//         setData(apiData.result || []);
+//         setInsights(apiData.textual_summary || []);
+//         setNextPrompts(apiData.followup_prompts || []);
+
+    } catch (error) {
+      console.error("Error fetching insights:", error);
+      setQuery("Error generating query.");
+      setOptimizedQuery("Error generating query.");
+//         setData([]);
+//         setInsights("Fail to generate insights.");
+//         setNextPrompts([]);
+    } finally {
+      setOptimizeLoading(false);
+    }
+  };
 
   const handleInsightData = async () => {
     setInsightLoading(true);
-    // const promptResponses = [
-    //   {
-    //     keywords: ["loan"],
-    //     query: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt 
-    //             JOIN customer c ON lt.CustomerID = c.CustomerID 
-    //             JOIN banks b ON lt.BankID = b.BankID 
-    //             WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
-
-    //     optimizedQuery: `SELECT c.CustomerName, lt.Amount, b.BankName FROM LoanTransaction lt
-    //                     JOIN customer c ON lt.CustomerID = c.CustomerID
-    //                     JOIN banks b ON lt.BankID = b.BankID
-    //                     WHERE lt.Type = 'Loan' AND b.BankName = 'China Development Bank1'`,
-    //     data: [
-    //       { customerName: "Auto Parts Corp1", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp2", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp3", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp4", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp5", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp6", loanAmount: "$300,000", bank: "China Development Bank" },
-    //       { customerName: "Auto Parts Corp7", loanAmount: "$300,000", bank: "China Development Bank" },
-
-    //     ],
-    //     insights: [ "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
-    //                 "The total loan given by China Development Bank is $300,000",
-    //                 "The total loan given by China Development Bank is $300,000"],
-    //     nextPrompts: [
-    //       "How much loan has India National Bank given to its customers?",
-    //       "Compare Q1 2024 loan approvals with Q1 2023.",
-    //       "Show loan trends for 2024.",
-    //       "The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000. The total loan given by China Development Bank is $300,000",
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["sales", "top regions"],
-    //     query: `SELECT region, SUM(sales) AS total_sales FROM sales_data 
-    //             GROUP BY region ORDER BY total_sales DESC LIMIT 5`,
-    //     data: [
-    //       { region: "North", sales: "$500,000" },
-    //       { region: "South", sales: "$450,000" },
-    //       { region: "East", sales: "$420,000" },
-    //       { region: "West", sales: "$410,000" },
-    //       { region: "Central", sales: "$400,000" }
-    //     ],
-    //     insights: "The North region had the highest sales in 2024.",
-    //     nextPrompts: [
-    //       "What are the sales for Q2 2024?",
-    //       "Compare sales trends between 2023 and 2024.",
-    //       "Which product category performed best?",
-    //       "Give me top 3 customers based on highest revenue?"
-    //     ]
-    //   },
-    //   {
-    //     keywords: ["customer", "highest revenue"],
-    //     query: `SELECT CustomerName, SUM(Revenue) AS TotalRevenue 
-    //             FROM Transactions GROUP BY CustomerName ORDER BY TotalRevenue DESC LIMIT 3`,
-    //     data: [
-    //       { customerName: "TechCorp Ltd.", revenue: "$1,200,000" },
-    //       { customerName: "RetailHub Inc.", revenue: "$1,050,000" },
-    //       { customerName: "AutoMobiles Ltd.", revenue: "$980,000" }
-    //     ],
-    //     insights: "TechCorp Ltd. was the highest revenue-generating customer.",
-    //     nextPrompts: [
-    //       "Which customer had the highest profit margin?",
-    //       "Compare revenue trends between 2023 and 2024.",
-    //       "Which product had the highest revenue?",
-    //       "How much loan did China Development Bank gave to its customers?"
-    //     ]
-    //   }
-    // ];
-    // setTimeout(() => {
-    //   let response = {
-    //     query: "No data found for this prompt.",
-    //     data: [],
-    //     insights: "No insights available for this prompt.",
-    //     nextPrompts: []
-    //   };
-  
-    //   // Match the prompt against the keyword-based responses
-    //   for (const item of promptResponses) {
-    //     if (item.keywords.some(keyword => prompt.toLowerCase().includes(keyword.toLowerCase()))) {
-    //       response = item;
-    //       break;
-    //     }
-    //   }
-    //   setData(dataBeforeClick);
-    //   setOptimizedQuery(optimizedQueryBeforeClick);
-    //   setInsights(insightsBeforeClick);
-    //   setNextPrompts(nextPromptsBeforeClick);
-    //   setInsightLoading(false);
-    // }, 2000);
     try {
-      const response = await fetch("http://localhost:8082/generate_insights", {
+      const response = await fetch("http://localhost:8082/generate_insights_from_nl_query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           query: prompt, // Sending prompt as 'query'
+          bq_query: optimizedQuery,
           llm_type: "openai"
         }),
       });
-  
+
       if(!response.ok) {
         throw new Error('API request failed with status ${response.status}')
       }
-  
+
       const apiData = await response.json();
-  
+
       // Set the state with API response
       // setQuery(apiData.sql_query_generated || "No query generated.");
       setOptimizedQuery(apiData.sql_query_optimised || "No query generated.");
       setData(apiData.result || []);
       setInsights(apiData.textual_summary || []);
       setNextPrompts(apiData.followup_prompts || []);
-  
+
     } catch (error) {
       console.error("Error fetching insights:", error);
       setQuery("Error generating query.");
-      setOptimizedQuery("Error generating query.");
+//       setOptimizedQuery("Error generating query.");
       setData([]);
       setInsights("Fail to generate insights.");
       setNextPrompts([]);
@@ -376,26 +261,30 @@ const BusinessUserTab = () => {
     }, 2000); // 2 seconds delay
   };
 
-    const handleInsightClick = () => {
-      // setInsightLoading(true);
-      // Simulate an async operation
+  const handleInsightClick = () => {
+    // setInsightLoading(true);
+    // Simulate an async operation
+    setTimeout(() => {
+      setInsightLoading(true);
+    }, 2000); // 2 seconds delay
+  };
+
+  const handleLinkClick = (text) => {
+      // Populate the TextField with the clicked link
+      setPrompt(text);
       setTimeout(() => {
-        setInsightLoading(true);
-      }, 2000); // 2 seconds delay
-    };
+        if (textFieldRef.current) {
+          textFieldRef.current.focus();
 
-    const handleLinkClick = (text) => {
-        // Populate the TextField with the clicked link
-        setPrompt(text);
-        setTimeout(() => {
-          if (textFieldRef.current) {
-            textFieldRef.current.focus();
+          // Select all text in the TextField
+          textFieldRef.current.select();
+        }
+      }, 100);
+  };
 
-            // Select all text in the TextField
-            textFieldRef.current.select();
-          }
-        }, 100);
-    };
+  const handleTextChange = (e) => {
+    setTextContent(e.target.value);
+  };
 
   // Handle page change
   const handleChangePage = (event, newPage) => {
@@ -412,15 +301,13 @@ const BusinessUserTab = () => {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
   const displayRows = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
-
-
   return (
    <Container maxWidth={false} disableGutters sx={{ width: "99vw", margin: 0, padding: 0,  minHeight: "100vh", display: "flex", flexDirection: "column" }}> {/* Center the content */}
      <CssBaseline />
       <Box  sx={{ mt: 2, mb: 2, width: '100%', alignItems: 'center' }}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={9.5}>
-                <TextField
+                <Grid item xs={12} sm={7} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <TextField
                     inputRef={textFieldRef}
                     autoFocus
                     fullWidth
@@ -428,47 +315,93 @@ const BusinessUserTab = () => {
                     variant="outlined"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
-                />
-            </Grid>
-            <Grid item xs={12} sm={1.5}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center'
-              }}
-            >
-              <FormControl fullWidth size="small">
-                <InputLabel id="model-select-label">LLM</InputLabel>
-                <Select
-                  labelId="model-select-label"
-                  id="model-select"
-                  value={selectedModel}
-                  label="AI Model"
-                  onChange={handleChange}
-                  sx={{ mb: 2 }}
-                >
-                  {models.map((model) => (
-                    <MenuItem key={model.value} value={model.value}>
-                      {model.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={1}
-                sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      textAlign: 'center'
-                    }}>
-              <LoadingButton loading={generateLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={ handleFetchData} sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                Generate
-              </LoadingButton>
-            </Grid>
-        </Grid>
+                    sx={{ backgroundColor: "white",  }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
+                    <InputLabel id="model-select-label">LLM</InputLabel>
+                    <Select
+                      labelId="model-select-label"
+                      id="model-select"
+                      value={selectedModel}
+                      label="AI Model"
+                      onChange={handleChange}
+                    >
+                      {models.map((model) => (
+                        <MenuItem key={model.value} value={model.value}>
+                          {model.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                    <InputLabel id="data-category-select-label">Domain</InputLabel>
+                    <Select
+                      labelId="data-category-select-label"
+                      id="data-category-select"
+                      value={selectedDataCategory}
+                      label="Domain"
+                      onChange={handleDataCategoryChange}
+                    >
+                      {dataCategory.map((data) => (
+                        <MenuItem key={data.value} value={data.value}>
+                          {data.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                    <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
+                    <Select
+                      labelId="data-sub-category-select-label"
+                      id="data-sub-category-select"
+                      value={selectedDataSubCategory}
+                      label="Sub-Domain"
+                      onChange={handleDataSubCategoryChange}
+                    >
+                      {dataSubCategory.map((data) => (
+                        <MenuItem key={data.value} value={data.value}>
+                          {data.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                    <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                      <InputLabel id="database-type-select-label">Database</InputLabel>
+                      <Select
+                        labelId="database-type-select-label"
+                        id="database-type-select"
+                        value={selectedDatabaseType}
+                        label="Database-Type"
+                        onChange={handleDatabaseTypeChange}
+                      >
+                        {databaseType.map((data) => (
+                          <MenuItem key={data.value} value={data.value}>
+                            {data.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+
+                </Grid>
+                <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <LoadingButton
+                    loading={generateLoading}
+                    loadingPosition="start"
+                    startIcon={<PlayArrowIcon />}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleFetchData}
+                    sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f' } }}
+                  >
+                    Generate
+                  </LoadingButton>
+                </Grid>
+              </Grid>
       </Box>
 
 
@@ -480,7 +413,7 @@ const BusinessUserTab = () => {
             <Box
                   sx={{
                     width: '100%',
-                    mb: 2,
+
                     borderRadius: 1,
                     overflow: 'hidden',
                     boxShadow: 1,
@@ -537,18 +470,35 @@ const BusinessUserTab = () => {
                       overflowX: 'auto',
                     }}
                   >
-                    {query}
+                  <TextField
+                      fullWidth
+                      multiline
+                      label="Editable Text"
+                      variant="outlined"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                      InputProps={{
+                        style: {
+                          fontFamily: 'monospace',
+                          fontWeight: 'bold',
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+{/*                     {query} */}
                   </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ mb: 2, alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                Optimize & Get Insights
+                <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
+                <LoadingButton loading={optimizeLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleOptimizeData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
+                                                Optimize
                 </LoadingButton>
                 </Box>
           </Grid>
-{/*            { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
-          { optimizedQuery && insights.length > 0 && (
+
+{/*           { optimizedQuery && insights.length > 0 && ( */}
+            { optimizedQuery && (
               <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
                 <Box
                       sx={{
@@ -610,21 +560,35 @@ const BusinessUserTab = () => {
                           overflowX: 'auto',
                         }}
                       >
-                        {optimizedQuery}
+                      <TextField
+                        fullWidth
+                        multiline
+                        label="Editable Text"
+                        variant="outlined"
+                        value={optimizedQuery}
+                        onChange={(e) => setOptimizedQuery(e.target.value)}
+                        sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
+                        InputProps={{
+                          style: {
+                            fontFamily: 'monospace',
+                            fontWeight: 'bold',
+                            fontSize: '0.875rem',
+                          },
+                        }}
+                      />
+{/*                         {optimizedQuery} */}
                       </Box>
+                    </Box>
+                    <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
+                                                    Get Insights
+                    </LoadingButton>
                     </Box>
               </Grid>
           )}
       </Grid>
 
       )}
-
-{/*       {query && ( */}
-
-
-{/*    )} */}
-
-{/*      { insightLoading && <CircularProgress sx={{ mt: 2 }} />} */}
 
     {  insights.length > 0 && (
 
@@ -688,7 +652,7 @@ const BusinessUserTab = () => {
       //                                      height: '200px', // Optional: Sets the height of the box
                                          }}
                                      >
-                                <TableContainer  sx={{ border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
+                                <TableContainer  sx={{ border: '1px solid #ccc', borderRadius: '4px', overflow: 'auto' }}>
                                   <Table stickyHeader>
                                     <TableHead sx={{
                                        '& .MuiTableCell-head': {

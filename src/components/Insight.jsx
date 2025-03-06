@@ -183,7 +183,7 @@ const BusinessUserTab = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          query: query, // Sending prompt as 'query'
+          query: prompt, // Sending prompt as 'query'
           llm_type: "openai"
         }),
       });
@@ -395,7 +395,7 @@ const BusinessUserTab = () => {
                     startIcon={<PlayArrowIcon />}
                     variant="contained"
                     color="primary"
-                    onClick={handleFetchData}
+                    onClick={handleOptimizeData}
                     sx={{ mb: 2, alignItems: 'center', typography: 'caption', '&:hover': { backgroundColor: '#303f9f' } }}
                   >
                     Generate
@@ -404,100 +404,92 @@ const BusinessUserTab = () => {
               </Grid>
       </Box>
 
-
-{/*       {loading && <CircularProgress sx={{ mt: 2 }} />} */}
-
-      {query && (
+{/*       {query && ( */}
         <Grid container spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc'}}>
-          <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
-            <Box
-                  sx={{
-                    width: '100%',
+{/*           <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}> */}
+{/*             <Box */}
+{/*                   sx={{ */}
+{/*                     width: '100%', */}
 
-                    borderRadius: 1,
-                    overflow: 'hidden',
-                    boxShadow: 1,
-                    bgcolor: 'background.paper',
-                  }}
-                >
-                  {/* Header */}
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      px: 2,
-                      py: 1,
-                      borderBottom: 1,
-                      borderColor: 'divider',
-                      backgroundColor: '#eaecec', // Background color for the header
-                      color: 'black',
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: 'text.secondary',
-                        fontWeight: 'bold',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                      }}
-                    >
-                      Generated Query
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <IconButton size="small">
-                        <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} />
-                      </IconButton>
-                      <IconButton size="small">
-                        <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
-                      </IconButton>
-                    </Box>
-                  </Box>
+{/*                     borderRadius: 1, */}
+{/*                     overflow: 'hidden', */}
+{/*                     boxShadow: 1, */}
+{/*                     bgcolor: 'background.paper', */}
+{/*                   }} */}
+{/*                 > */}
+{/*                    */}{/* Header */}
+{/*                   <Box */}
+{/*                     sx={{ */}
+{/*                       display: 'flex', */}
+{/*                       justifyContent: 'space-between', */}
+{/*                       alignItems: 'center', */}
+{/*                       px: 2, */}
+{/*                       py: 1, */}
+{/*                       borderBottom: 1, */}
+{/*                       borderColor: 'divider', */}
+{/*                       backgroundColor: '#eaecec', // Background color for the header */}
+{/*                       color: 'black', */}
+{/*                     }} */}
+{/*                   > */}
+{/*                     <Typography */}
+{/*                       variant="body2" */}
+{/*                       sx={{ */}
+{/*                         color: 'text.secondary', */}
+{/*                         fontWeight: 'bold', */}
+{/*                         display: 'flex', */}
+{/*                         alignItems: 'center', */}
+{/*                         gap: 1, */}
+{/*                       }} */}
+{/*                     > */}
+{/*                       Generated Query */}
+{/*                     </Typography> */}
+{/*                     <Box sx={{ display: 'flex', gap: 1 }}> */}
+{/*                       <IconButton size="small"> */}
+{/*                         <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} /> */}
+{/*                       </IconButton> */}
+{/*                       <IconButton size="small"> */}
+{/*                         <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} /> */}
+{/*                       </IconButton> */}
+{/*                     </Box> */}
+{/*                   </Box> */}
+{/*                   <Box */}
+{/*                     sx={{ */}
+{/*                       p: 2, */}
+{/*                       //backgroundColor: (theme) => theme.palette.primary.dark, // Dark blue background */}
+{/*                       backgroundColor: '#bbdffc', */}
+{/*                       color: 'black', */}
+{/*                       fontFamily: 'monospace', */}
+{/*                       fontWeight: 'bold', */}
+{/*                       fontSize: '0.875rem', */}
+{/*                       whiteSpace: 'pre-wrap', */}
+{/*                       overflowX: 'auto', */}
+{/*                     }} */}
+{/*                   > */}
+{/*                   <TextField */}
+{/*                       fullWidth */}
+{/*                       multiline */}
+{/*                       label="Editable Text" */}
+{/*                       variant="outlined" */}
+{/*                       value={query} */}
+{/*                       onChange={(e) => setQuery(e.target.value)} */}
+{/*                       sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }} */}
+{/*                       InputProps={{ */}
+{/*                         style: { */}
+{/*                           fontFamily: 'monospace', */}
+{/*                           fontWeight: 'bold', */}
+{/*                           fontSize: '0.875rem', */}
+{/*                         }, */}
+{/*                       }} */}
+{/*                     /> */}
+{/*                   </Box> */}
+{/*                 </Box> */}
+{/*                 <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}> */}
+{/*                 <LoadingButton loading={optimizeLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleOptimizeData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}> */}
+{/*                                                 Optimize */}
+{/*                 </LoadingButton> */}
+{/*                 </Box> */}
+{/*           </Grid> */}
 
-                  {/* SQL Content */}
-                  <Box
-                    sx={{
-                      p: 2,
-                      //backgroundColor: (theme) => theme.palette.primary.dark, // Dark blue background
-                      backgroundColor: '#bbdffc',
-                      color: 'black',
-                      fontFamily: 'monospace',
-                      fontWeight: 'bold',
-                      fontSize: '0.875rem',
-                      whiteSpace: 'pre-wrap',
-                      overflowX: 'auto',
-                    }}
-                  >
-                  <TextField
-                      fullWidth
-                      multiline
-                      label="Editable Text"
-                      variant="outlined"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      sx={{ mb: 2, backgroundColor: "white", borderRadius: 1 }}
-                      InputProps={{
-                        style: {
-                          fontFamily: 'monospace',
-                          fontWeight: 'bold',
-                          fontSize: '0.875rem',
-                        },
-                      }}
-                    />
-{/*                     {query} */}
-                  </Box>
-                </Box>
-                <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
-                <LoadingButton loading={optimizeLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleOptimizeData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                Optimize
-                </LoadingButton>
-                </Box>
-          </Grid>
-
-
-{/*           { optimizedQuery && insights.length > 0 && ( */}
             { optimizedQuery && (
               <Grid item xs={12} sm={6} sx={{ alignSelf: 'flex-start'}}>
                 <Box
@@ -545,8 +537,6 @@ const BusinessUserTab = () => {
                           </IconButton>
                         </Box>
                       </Box>
-
-                      {/* SQL Content */}
                       <Box
                         sx={{
                           p: 2,
@@ -576,7 +566,6 @@ const BusinessUserTab = () => {
                           },
                         }}
                       />
-{/*                         {optimizedQuery} */}
                       </Box>
                     </Box>
                     <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -588,7 +577,7 @@ const BusinessUserTab = () => {
           )}
       </Grid>
 
-      )}
+{/*       )} */}
 
     {  insights.length > 0 && (
 
@@ -685,17 +674,6 @@ const BusinessUserTab = () => {
                                       </TableRow>
                                     )}
                                   </TableBody>
-
-
-      {/*                               <TableBody sx={{ border: '1px solid #ccc' }}> */}
-      {/*                                 {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => ( */}
-      {/*                                   <TableRow key={index}> */}
-      {/*                                     {Object.keys(row).map((key) => ( */}
-      {/*                                       <TableCell sx={{ borderRight: '1px solid #ccc' }} key={key}>{row[key]}</TableCell> */}
-      {/*                                     ))} */}
-      {/*                                   </TableRow> */}
-      {/*                                 ))} */}
-      {/*                               </TableBody> */}
                                   </Table>
                                 </TableContainer>
 
@@ -711,25 +689,8 @@ const BusinessUserTab = () => {
                                           onPageChange={handleChangePage}
                                           onRowsPerPageChange={handleChangeRowsPerPage}
                                     />
-      {/*                           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}> */}
-      {/*                             {Array.from({ length: Math.ceil(data.length / rowsPerPage) }, (_, index) => ( */}
-      {/*                               <Button */}
-      {/*                                 key={index} */}
-      {/*                                 variant={page === index ? "contained" : "outlined"} */}
-      {/*                                 onClick={() => setPage(index)} */}
-      {/*                                 sx={{ mx: 0.5 }} */}
-      {/*                               > */}
-      {/*                                 {index + 1} */}
-      {/*                               </Button> */}
-      {/*                             ))} */}
-      {/*                           </Box> */}
                              </Box>
                       )}
-      {/*                 {data.length > 0 && ( */}
-      {/*                 <Button variant="contained" color="primary" onClick={handleInsightData} sx={{ mt: 2 }}> */}
-      {/*                   Get Insights */}
-      {/*                 </Button> */}
-      {/*               )} */}
                 </Grid>
 
                 <Grid item xs={12} sm={5.9} sx={{ alignSelf: 'flex-start'}}>
@@ -845,16 +806,8 @@ const BusinessUserTab = () => {
                           Suggested Next Prompts:
                         </Typography>
                         <Box variant="subtitle2" sx={{ display: 'flex', gap: 1 }}>
-{/*                           <IconButton size="small"> */}
-{/*                             <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} /> */}
-{/*                           </IconButton> */}
-{/*                           <IconButton size="small"> */}
-{/*                             <PedalBikeIcon sx={{ fontSize: 18 }} /> */}
-{/*                           </IconButton> */}
                         </Box>
                       </Box>
-
-                      {/* SQL Content */}
                       <Box
                         sx={{
                           p: 2,
