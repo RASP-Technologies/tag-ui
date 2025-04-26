@@ -582,7 +582,7 @@ const BusinessUserTab = () => {
                     </Box>
                     <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
                     <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                    Get Insights
+                                                    Get Data
                     </LoadingButton>
                     </Box>
               </Grid>
