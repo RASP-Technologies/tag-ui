@@ -244,7 +244,7 @@ const TechnicalAnalystTab = () => {
             />
           </Grid>
           <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
+                {/* <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
                   <InputLabel id="model-select-label">LLM</InputLabel>
                   <Select
                     labelId="model-select-label"
@@ -260,8 +260,8 @@ const TechnicalAnalystTab = () => {
                       </MenuItem>
                     ))}
                   </Select>
-                </FormControl>
-                <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                </FormControl> */}
+                <FormControl size="small" sx={{ m: 1, width: '250px' }}>
                   <InputLabel id="data-category-select-label">Domain</InputLabel>
                   <Select
                     labelId="data-category-select-label"
@@ -277,7 +277,7 @@ const TechnicalAnalystTab = () => {
                     ))}
                   </Select>
                 </FormControl>
-                <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                <FormControl size="small" sx={{ m: 1, width: '250px' }}>
                   <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
                   <Select
                     labelId="data-sub-category-select-label"
@@ -294,7 +294,7 @@ const TechnicalAnalystTab = () => {
                   </Select>
                 </FormControl>
 
-                <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                {/* <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                   <InputLabel id="database-type-select-label">Database</InputLabel>
                   <Select
                     labelId="database-type-select-label"
@@ -309,7 +309,7 @@ const TechnicalAnalystTab = () => {
                       </MenuItem>
                     ))}
                   </Select>
-                </FormControl>
+                </FormControl> */}
           </Grid>
           <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <LoadingButton
@@ -484,7 +484,7 @@ const TechnicalAnalystTab = () => {
                     </Box>
                     <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
                       <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{  alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                      Get Insights
+                                                      Show Results
                       </LoadingButton>
                     </Box>
               </Grid>
@@ -508,7 +508,7 @@ const TechnicalAnalystTab = () => {
                           <Box
                               sx={{
                                 width: '100%',
-                                maxWidth: '900px',
+                                // maxWidth: '900px',
                                 borderRadius: 1,
                                 overflow: 'hidden',
                                 boxShadow: 1,
@@ -640,177 +640,6 @@ const TechnicalAnalystTab = () => {
       {/*                   Get Insights */}
       {/*                 </Button> */}
       {/*               )} */}
-                </Grid>
-
-                <Grid item xs={12} sm={5.9} sx={{ alignSelf: 'flex-start'}}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        mb: 2,
-                        borderRadius: 1,
-                        overflow: 'hidden',
-                        boxShadow: 1,
-                        bgcolor: 'background.paper',
-                      }}
-                    >
-                      {/* Header */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          px: 2,
-                          py: 1,
-                          borderBottom: 1,
-                          borderColor: 'divider',
-                          backgroundColor: '#eaecec', // Background color for the header
-                          color: 'black',
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: 'text.secondary',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                          }}
-                        >
-                          Insights
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          <IconButton size="small">
-                            <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} />
-                          </IconButton>
-                          <IconButton size="small">
-                            <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
-                          </IconButton>
-                        </Box>
-                      </Box>
-
-                      {/* SQL Content */}
-                      <Box
-                        sx={{
-                          p: 2,
-
-                          color: 'black',
-                          //fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          whiteSpace: 'pre-wrap',
-                          overflowX: 'auto',
-                        }}
-                      >
-                        {insights.map((p, index) => (
-                            <List sx={{ padding: 0 }}>
-                               <ListItem sx={{ py: 0.5 }}>
-                                   <ListItemIcon >
-                                   <SendSharpIcon sx={{ fontSize: 'large' }} />
-                                   </ListItemIcon>
-                                    <Typography variant="body2" component="span">
-                                         {p}
-                                    </Typography>
-
-                               </ListItem>
-                            </List>
-                        ))}
-                      </Box>
-                    </Box>
-
-                    { nextPrompts.length > 0 && (
-                    <Box
-                      sx={{
-                        width: '100%',
-                        mb: 2,
-                        borderRadius: 1,
-                        overflow: 'hidden',
-                        boxShadow: 1,
-                        bgcolor: 'background.paper',
-                      }}
-                    >
-                      {/* Header */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          px: 2,
-                          py: 1,
-                          borderBottom: 1,
-                          borderColor: 'divider',
-                          backgroundColor: '#eaecec', // Background color for the header
-                          color: 'black',
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: 'text.secondary',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                          }}
-                        >
-                          Suggested Next Prompts:
-                        </Typography>
-                        <Box variant="subtitle2" sx={{ display: 'flex', gap: 1 }}>
-{/*                           <IconButton size="small"> */}
-{/*                             <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} /> */}
-{/*                           </IconButton> */}
-{/*                           <IconButton size="small"> */}
-{/*                             <PedalBikeIcon sx={{ fontSize: 18 }} /> */}
-{/*                           </IconButton> */}
-                        </Box>
-                      </Box>
-
-                      {/* SQL Content */}
-                      <Box
-                        sx={{
-                          p: 2,
-
-                          color: 'black',
-                          //fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          whiteSpace: 'pre-wrap',
-                          overflowX: 'auto',
-                        }}
-                      >
-
-                          { nextPrompts.map((p, index) => (
-
-                              <List sx={{ padding: 0 }}>
-                                 <ListItem sx={{ py: 0.5 }}>
-                                     <ListItemIcon >
-
-                                             <SendSharpIcon sx={{ fontSize: 'large' }} />
-                                     </ListItemIcon>
-                                      <Typography key={index}  variant="body1" component="span">
-                                           <Link
-                                               align="left"
-                                               component="button"
-                                               color="primary"
-                                               underline="hover"
-                                               onClick={() => handleLinkClick(p)}
-                                               sx={{
-                                                 typography: 'body1',
-
-                                                 cursor: 'pointer'
-                                               }}
-                                             >
-                                           {p}
-                                        </Link>
-                                      </Typography>
-
-                                 </ListItem>
-                              </List>
-
-                          ))}
-
-                      </Box>
-
-                    </Box>
-                  )}
                 </Grid>
 
       </Grid>
