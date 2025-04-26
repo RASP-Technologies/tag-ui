@@ -595,12 +595,12 @@ const BusinessUserTab = () => {
     {  insights.length > 0 && (
 
       <Grid container bgcolor='white' spacing={2} sx={{ mt: 1, padding: 1, margin: 0, width: '100vw', border: '1px solid #ccc', height: '700px'}}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={11.8}>
                       {data.length > 0 && (
                           <Box
                               sx={{
                                 width: '100%',
-                                maxWidth: '900px',
+                                // maxWidth: '900px',
                                 borderRadius: 1,
                                 overflow: 'hidden',
                                 boxShadow: 1,
@@ -705,170 +705,6 @@ const BusinessUserTab = () => {
                              </Box>
                       )}
                 </Grid>
-
-                <Grid item xs={12} sm={5.9} sx={{ alignSelf: 'flex-start'}}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        mb: 2,
-                        borderRadius: 1,
-                        overflow: 'hidden',
-                        boxShadow: 1,
-                        bgcolor: 'background.paper',
-                      }}
-                    >
-                      {/* Header */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          px: 2,
-                          py: 1,
-                          borderBottom: 1,
-                          borderColor: 'divider',
-                          backgroundColor: '#eaecec', // Background color for the header
-                          color: 'black',
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: 'text.secondary',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                          }}
-                        >
-                          Insights
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          <IconButton size="small">
-                            <ContentCopyOutlinedIcon sx={{ fontSize: 20 }} />
-                          </IconButton>
-                          <IconButton size="small">
-                            <DownloadForOfflineOutlinedIcon sx={{ fontSize: 20 }} />
-                          </IconButton>
-                        </Box>
-                      </Box>
-
-                      {/* SQL Content */}
-                      <Box
-                        sx={{
-                          p: 2,
-
-                          color: 'black',
-                          //fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          whiteSpace: 'pre-wrap',
-                          overflowX: 'auto',
-                        }}
-                      >
-                        {insights.map((p, index) => (
-                            <List sx={{ padding: 0 }}>
-                               <ListItem sx={{ py: 0.5 }}>
-                                   <ListItemIcon >
-                                   <SendSharpIcon sx={{ fontSize: 'large' }} />
-                                   </ListItemIcon>
-                                    <Typography variant="body2" component="span">
-                                         {p}
-                                    </Typography>
-
-                               </ListItem>
-                            </List>
-                        ))}
-                      </Box>
-                    </Box>
-
-                    { nextPrompts.length > 0 && (
-                    <Box
-                      sx={{
-                        width: '100%',
-                        mb: 2,
-                        borderRadius: 1,
-                        overflow: 'hidden',
-                        boxShadow: 1,
-                        bgcolor: 'background.paper',
-                      }}
-                    >
-                      {/* Header */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          px: 2,
-                          py: 1,
-                          borderBottom: 1,
-                          borderColor: 'divider',
-                          backgroundColor: '#eaecec', // Background color for the header
-                          color: 'black',
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: 'text.secondary',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                          }}
-                        >
-                          Suggested Next Prompts:
-                        </Typography>
-                        <Box variant="subtitle2" sx={{ display: 'flex', gap: 1 }}>
-                        </Box>
-                      </Box>
-                      <Box
-                        sx={{
-                          p: 2,
-
-                          color: 'black',
-                          //fontFamily: 'monospace',
-                          fontSize: '0.875rem',
-                          whiteSpace: 'pre-wrap',
-                          overflowX: 'auto',
-                        }}
-                      >
-
-                          { nextPrompts.map((p, index) => (
-
-                              <List sx={{ padding: 0 }}>
-                                 <ListItem sx={{ py: 0.5 }}>
-                                     <ListItemIcon >
-
-                                             <SendSharpIcon sx={{ fontSize: 'large' }} />
-                                     </ListItemIcon>
-                                      <Typography key={index}  variant="body1" component="span">
-                                           <Link
-                                               align="left"
-                                               component="button"
-                                               color="primary"
-                                               underline="hover"
-                                               onClick={() => handleLinkClick(p)}
-                                               sx={{
-                                                 typography: 'body1',
-
-                                                 cursor: 'pointer'
-                                               }}
-                                             >
-                                           {p}
-                                        </Link>
-                                      </Typography>
-
-                                 </ListItem>
-                              </List>
-
-                          ))}
-
-                      </Box>
-
-                    </Box>
-                  )}
-                </Grid>
-
       </Grid>
 
       )}
