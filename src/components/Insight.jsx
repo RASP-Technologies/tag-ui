@@ -329,7 +329,7 @@ const BusinessUserTab = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                  <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
+                  {/* <FormControl size="small" sx={{ m: 1, width: '120px' }} disabled>
                     <InputLabel id="model-select-label">LLM</InputLabel>
                     <Select
                       labelId="model-select-label"
@@ -344,9 +344,9 @@ const BusinessUserTab = () => {
                         </MenuItem>
                       ))}
                     </Select>
-                  </FormControl>
+                  </FormControl> */}
 
-                  <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                  <FormControl size="small" sx={{ m: 1, width: '250px' }}>
                     <InputLabel id="data-category-select-label">Domain</InputLabel>
                     <Select
                       labelId="data-category-select-label"
@@ -363,7 +363,7 @@ const BusinessUserTab = () => {
                     </Select>
                   </FormControl>
 
-                  <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                  <FormControl size="small" sx={{ m: 1, width: '250px' }}>
                     <InputLabel id="data-sub-category-select-label">Sub-Domain</InputLabel>
                     <Select
                       labelId="data-sub-category-select-label"
@@ -380,7 +380,7 @@ const BusinessUserTab = () => {
                     </Select>
                   </FormControl>
 
-                    <FormControl size="small" sx={{ m: 1, width: '150px' }}>
+                    {/* <FormControl size="small" sx={{ m: 1, width: '150px' }}>
                       <InputLabel id="database-type-select-label">Database</InputLabel>
                       <Select
                         labelId="database-type-select-label"
@@ -395,7 +395,7 @@ const BusinessUserTab = () => {
                           </MenuItem>
                         ))}
                       </Select>
-                    </FormControl>
+                    </FormControl> */}
 
                 </Grid>
                 <Grid item xs={12} sm={1} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
@@ -582,7 +582,7 @@ const BusinessUserTab = () => {
                     </Box>
                     <Box sx={{ p:2, display: 'flex', justifyContent: 'flex-end' }}>
                     <LoadingButton loading={insightLoading} loadingPosition="start" startIcon={<PlayArrowIcon />} variant="contained" color="primary" onClick={handleInsightData} sx={{ alignSelf: 'flex-end', typography: 'caption', '&:hover': { backgroundColor: '#303f9f'}}}>
-                                                    Get Data
+                                                    Show Results
                     </LoadingButton>
                     </Box>
               </Grid>
