@@ -236,6 +236,18 @@ const Recommendation = () => {
       schemaChange: 'No',
       previousQuery: 'NA',
       optimizedQuery: 'NA',
+    },
+    {
+       category: 'Code_Refactoring',
+       recommendation: 'Some queries appear as duplicate ',
+       files: 'Load_Account_Details.sql, Load_AcntDetails.sql',
+       improvementCategory: 'Cost-Optimization',
+       lastUsed: '1 day ago',
+       queryChange: 'No',
+       appChange: 'Yes',
+       schemaChange: 'No',
+       previousQuery: 'NA',
+       optimizedQuery: 'NA',
     }
 ];
   useEffect(() => {
