@@ -240,7 +240,7 @@ const Recommendation = () => {
     {
        category: 'Code_Refactoring',
        recommendation: 'Some queries appear as duplicate ',
-       files: 'Load_Account_Details.sql, Load_AcntDetails.sql',
+       files: 'Load_Account_Details.sql, Load_Acnt_Details.sql',
        improvementCategory: 'Cost-Optimization',
        lastUsed: '1 day ago',
        queryChange: 'No',
