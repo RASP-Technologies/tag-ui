@@ -224,6 +224,18 @@ const Recommendation = () => {
       schemaChange: 'No',
       previousQuery: 'NA',
       optimizedQuery: 'NA',
+    },
+    {
+      category: 'Code_Refactoring',
+      recommendation: 'Some SQLs running too frequently, frequency can be reduced to save cost',
+      files: 'Load_Employee.sql',
+      improvementCategory: 'Cost-Optimization',
+      lastUsed: '1 day ago',
+      queryChange: 'No',
+      appChange: 'Yes',
+      schemaChange: 'No',
+      previousQuery: 'NA',
+      optimizedQuery: 'NA',
     }
 ];
   useEffect(() => {
