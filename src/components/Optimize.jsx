@@ -124,7 +124,7 @@ const TechnicalAnalystTab = () => {
     setGenerateLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8082/optimise_query", {
+      const response = await fetch("http://localhost:8082/optimise_query_1", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
