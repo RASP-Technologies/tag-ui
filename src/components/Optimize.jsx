@@ -47,6 +47,9 @@ const TechnicalAnalystTab = () => {
   const [showResultsButton, setShowResultsButton] = useState(false);
   const textFieldRef = useRef(null);
   const [insightLoading, setInsightLoading] = useState(false);
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorPrompts, setErrorPrompts] = useState([]);
 
   const handleFetchData = async () => {
     setQuery("");
@@ -56,13 +59,20 @@ const TechnicalAnalystTab = () => {
     setShowResultsButton(false);
 
     try {
-      const response = await fetch("http://localhost:8082/optimise_query", {
+      const response = await fetch("http://localhost:8082/optimise_query_1", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: prompt, llm_type: "openai" })
       });
 
       const apiData = await response.json();
+
+      if (response.status === 400) {
+        setErrorMessage(apiData.textual_summary?.[0] || "An error occurred.");
+        setErrorPrompts(apiData.followup_prompts || []);
+        setErrorDialogOpen(true);
+        return;
+      }
 
       if (!response.ok) throw new Error("API failed");
 
@@ -235,21 +245,25 @@ const TechnicalAnalystTab = () => {
           )}
 
           {executionData && (
-              <TableContainer component={Paper} sx={{ mb: 4, maxWidth: 900 , overflowY: 'hidden'}}>
+              <TableContainer component={Paper} sx={{ mb: 4, maxWidth: '80%' , overflowY: 'hidden'}}>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Estimated Cost</TableCell>
-                      <TableCell>Data Processed</TableCell>
-                      <TableCell>Base Cost</TableCell>
-                      <TableCell>Price Per TB</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Estimated Cost</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Data Processed (Bytes)</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Data Processed (GB)</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Data Processed (TB)</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Base Cost</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Price Per TB</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     <TableRow>
                       <TableCell>{`$${executionData.estimated_cost_usd?.toFixed(6)}`}</TableCell>
-                      <TableCell>{`${executionData.bytes_processed} bytes`}</TableCell>
-                      <TableCell>{`$${executionData.base_cost_usd}`}</TableCell>
+                      <TableCell>{`${executionData.bytes_processed}`}</TableCell>
+                      <TableCell>{`${executionData.gigabytes_processed}`}</TableCell>
+                      <TableCell>{`${executionData.terabytes_processed}`}</TableCell>
+                      <TableCell>{`${executionData.base_cost_usd}$`}</TableCell>
                       <TableCell>{`$${executionData.price_per_tb_usd}`}</TableCell>
                     </TableRow>
                   </TableBody>
@@ -301,6 +315,30 @@ const TechnicalAnalystTab = () => {
           )}
 
         </Box>
+        <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
+          <DialogTitle fontWeight="bold">Query Error</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1" color="error">{errorMessage}</Typography>
+            {errorPrompts.length > 0 && (
+                <>
+                  <Typography variant="h6" sx={{ mt: 2 }}>Sample Analytical Prompts:</Typography>
+                  <Box component="ul" sx={{ pl: 2 }}> {/* Ensures bullet points are visible */}
+                    {errorPrompts.map((prompt, index) => (
+                        <Box key={index} sx={{ mb: 1 }}>
+                          <Typography variant="body2">{prompt}</Typography>
+                        </Box>
+                    ))}
+                  </Box>
+                </>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setErrorDialogOpen(false)} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </Container>
   );
 };

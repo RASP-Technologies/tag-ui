@@ -232,8 +232,8 @@ const BusinessUserTab = () => {
             <Grid container spacing={2} sx={{ mt: 1, padding: 1, border: "1px solid #ccc" }}>
               <Grid item xs={12} sm={11.8}>
                 <Box sx={{ borderRadius: 1, boxShadow: 1, bgcolor: "background.paper" }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", px: 2, py: 1, borderBottom: 1, borderColor: "divider", backgroundColor: "#eaecec" }}>
-                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", px: 1, py: 0, borderBottom: 0, borderColor: "divider", backgroundColor: "#000000"}}>
+                    <Typography variant="body2" sx={{ fontWeight: "bold", color: "white", py: 1 }}>
                       Optimized Query
                     </Typography>
                     <Box sx={{ display: "flex", gap: 1 }}>
@@ -296,7 +296,9 @@ const BusinessUserTab = () => {
                   <TableHead>
                     <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
                       <TableCell sx={{ fontWeight: "bold" }}>Estimated Cost</TableCell>
-                      <TableCell sx={{ fontWeight: "bold" }}>Data Processed</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Data Processed (Bytes)</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Data Processed (GB)</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>Data Processed (TB)</TableCell>
                       <TableCell sx={{ fontWeight: "bold" }}>Base Cost</TableCell>
                       <TableCell sx={{ fontWeight: "bold" }}>Price Per TB</TableCell>
                     </TableRow>
@@ -304,7 +306,9 @@ const BusinessUserTab = () => {
                   <TableBody>
                     <TableRow>
                       <TableCell>{`$${executionData.estimated_cost_usd?.toFixed(6)}`}</TableCell>
-                      <TableCell>{`${executionData.bytes_processed} bytes`}</TableCell>
+                      <TableCell>{`${executionData.bytes_processed}`}</TableCell>
+                      <TableCell>{`${executionData.gigabytes_processed}`}</TableCell>
+                      <TableCell>{`${executionData.terabytes_processed}`}</TableCell>
                       <TableCell>{`$${executionData.base_cost_usd}`}</TableCell>
                       <TableCell>{`$${executionData.price_per_tb_usd}`}</TableCell>
                     </TableRow>

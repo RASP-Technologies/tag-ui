@@ -59,7 +59,7 @@ const App = () => {
                             },
                         }}
                     >
-                        <Tab label="Insight" />
+                        <Tab label="Generate Query" />
                         <Tab label="Optimize" />
                         <Tab label="Recommendation" />
                     </Tabs>
